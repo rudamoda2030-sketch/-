@@ -1,0 +1,150 @@
+.intro {
+  display: block;
+  margin-top: 12rpx;
+}
+
+.market-shortcuts {
+  display: flex;
+  margin-top: 18rpx;
+}
+
+.shortcut-button {
+  flex: 1;
+  margin: 0 8rpx 0 0;
+  padding: 0 8rpx;
+  font-size: 21rpx;
+}
+
+.shortcut-button:last-child {
+  margin-right: 0;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  margin-top: 36rpx;
+  padding: 0 24rpx;
+  border: 1rpx solid #e5e0d9;
+  border-radius: 8rpx;
+  background: #fff;
+}
+
+.search-icon {
+  margin-right: 16rpx;
+  color: #89847e;
+  font-size: 38rpx;
+}
+
+.search-input {
+  flex: 1;
+  font-size: 26rpx;
+}
+
+.search-placeholder {
+  color: #aaa39b;
+}
+
+.store-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-card,
+.merchant-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+  padding: 18rpx;
+  border: 1rpx solid #ebe7e1;
+  border-radius: 12rpx;
+  background: #fff;
+}
+
+.product-image,
+.merchant-logo {
+  flex: 0 0 auto;
+  background: #eee8df;
+}
+
+.product-image {
+  width: 180rpx;
+  height: 210rpx;
+  border-radius: 8rpx;
+}
+
+.merchant-logo {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+}
+
+.product-info,
+.merchant-info {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: 0 20rpx;
+}
+
+.product-brand {
+  color: #9a7c5c;
+  font-size: 20rpx;
+}
+
+.product-name {
+  overflow: hidden;
+  margin-top: 8rpx;
+  font-size: 25rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-style {
+  margin-top: 8rpx;
+  color: #89847e;
+  font-size: 20rpx;
+}
+
+.product-price {
+  margin-top: 14rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.product-arrow {
+  color: #a49c93;
+  font-size: 36rpx;
+}
+
+.entry-copy {
+  display: block;
+  margin-top: 10rpx;
+  color: #89847e;
+  font-size: 22rpx;
+}
+
+.compact-empty {
+  min-height: 140rpx;
+}
+
+.entry-arrow {
+  color: #9a7c5c;
+  font-size: 36rpx;
+}
+
+.market-legal-links {
+  display: flex;
+  justify-content: center;
+  gap: 14rpx;
+  margin: 48rpx 0 20rpx;
+  color: #89847e;
+  font-size: 21rpx;
+}
+
+.market-legal-links navigator {
+  text-decoration: underline;
+}

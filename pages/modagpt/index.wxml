@@ -1,0 +1,46 @@
+<site-header />
+<view wx:if="{{featureEnabled}}" class="screen modagpt-screen">
+  <text class="eyebrow">RUDA · AI STUDIO</text>
+  <text class="page-title">ModaUI</text>
+  <text class="muted intro">时尚设计与创意推理，把灵感变成设计。</text>
+  <button class="tryon-entry" bindtap="openTryOn">虚拟试衣 <text>›</text></button>
+
+  <view wx:if="{{messages.length === 0}}" class="studio-intro">
+    <text class="studio-title">今天想设计什么？</text>
+    <text class="studio-copy">探索趋势、推敲廓形、搭配面料与色彩。</text>
+    <view class="prompt-list">
+      <button
+        wx:for="{{starterPrompts}}"
+        wx:key="*this"
+        class="prompt-button"
+        data-prompt="{{item}}"
+        bindtap="sendMessage"
+        disabled="{{busy}}"
+      >{{item}} <text class="prompt-arrow">↗</text></button>
+    </view>
+  </view>
+
+  <view wx:else class="message-list">
+    <view wx:for="{{messages}}" wx:key="index" class="message-row {{item.role === 'user' ? 'user-row' : 'assistant-row'}}">
+      <text class="message-bubble {{item.role === 'user' ? 'user-bubble' : 'assistant-bubble'}}">{{item.text}}</text>
+    </view>
+    <view wx:if="{{busy}}" class="message-row assistant-row">
+      <text class="message-bubble assistant-bubble">ModaUI 正在思考…</text>
+    </view>
+  </view>
+
+  <view wx:if="{{error}}" class="error-note">{{error}}</view>
+  <view class="composer">
+    <textarea
+      class="composer-input"
+      value="{{input}}"
+      placeholder="描述你的设计想法…"
+      placeholder-class="composer-placeholder"
+      maxlength="2000"
+      auto-height
+      bindinput="onInput"
+    />
+    <button class="send-button" bindtap="sendMessage" disabled="{{busy || !input}}">发送</button>
+  </view>
+  <text class="privacy-note">请勿发送个人身份、联系方式、银行卡或密码等敏感信息。</text>
+</view>

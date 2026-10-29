@@ -1,0 +1,171 @@
+<site-header />
+<view class="screen orders-page">
+  <text class="eyebrow">ORDER HISTORY</text>
+  <text class="page-title">我的订单</text>
+  <view wx:if="{{submitted}}" class="order-success">订单已提交。订单价格、付款状态和履约进度请以此页面显示为准。</view>
+  <view wx:if="{{filter !== 'all'}}" class="order-filter">
+    <text class="order-filter-label">筛选：{{filterLabel}}</text>
+    <text class="order-filter-clear" bindtap="clearFilter">显示全部</text>
+  </view>
+  <view wx:if="{{loading}}" class="empty-state">
+    <text class="empty-title">正在加载订单</text>
+  </view>
+  <view wx:elif="{{error}}" class="empty-state">
+    <text class="empty-title">订单暂时无法加载</text>
+    <text class="muted">{{error}}</text>
+  </view>
+  <view wx:elif="{{!orders.length}}" class="empty-state">
+    <text class="empty-title">还没有订单</text>
+    <text class="muted">提交订单后可在这里查看状态。</text>
+  </view>
+  <view wx:elif="{{!visibleOrders.length}}" class="empty-state">
+    <text class="empty-title">该状态下没有订单</text>
+    <text class="muted">可切换筛选查看其他订单。</text>
+    <text class="order-filter-clear" bindtap="clearFilter">显示全部订单</text>
+  </view>
+  <block wx:if="{{!loading && !error && visibleOrders.length}}">
+    <view class="order-card" wx:for="{{visibleOrders}}" wx:key="id">
+      <view class="order-header">
+        <view>
+          <text class="order-number">{{item.orderNo}}</text>
+          <text class="muted order-date">{{item.date}}</text>
+        </view>
+        <text class="order-status">{{item.statusLabel}} · {{item.paymentLabel}}</text>
+      </view>
+      <text class="order-items">{{item.itemSummary}}</text>
+      <view wx:if="{{item.currentAgreement}}" class="agreement-panel">
+        <view class="agreement-heading">
+          <text class="agreement-title">交易约定 v{{item.currentAgreement.version}}</text>
+          <text class="agreement-status">{{item.currentAgreement.status === 'pending_buyer' ? '待你确认' : item.currentAgreement.status === 'pending_merchant' ? '待商家确认' : '已确认'}}</text>
+        </view>
+        <text class="agreement-summary">总额 €{{item.currentAgreement.terms.totalAmount}} · {{item.currentAgreement.paymentPlanLabel}}</text>
+        <view class="agreement-detail">
+          <text class="agreement-line">付款方式：{{item.currentAgreement.terms.paymentMethod}}</text>
+          <text class="agreement-line">预付款：€{{item.currentAgreement.terms.prepaymentAmount}} · 余款条件：{{item.currentAgreement.terms.customPaymentCondition || item.currentAgreement.terms.remainingBalanceTrigger}}</text>
+          <text class="agreement-line">供货方式：{{item.currentAgreement.terms.supplyMode}} · 预计交期：{{item.currentAgreement.terms.expectedDeliveryAt || '待确认'}}</text>
+          <view wx:for="{{item.currentAgreement.displayItems}}" wx:for-item="agreementItem" wx:key="orderItemId" class="agreement-line">
+            <text>{{agreementItem.label}} · {{agreementItem.quantity}} × €{{agreementItem.unitPrice}}</text>
+          </view>
+        </view>
+        <view wx:if="{{item.canConfirmAgreement}}" class="agreement-actions">
+          <button class="agreement-primary" data-id="{{item.id}}" data-agreement-id="{{item.currentAgreement.id}}" data-version="{{item.currentAgreement.version}}" bindtap="confirmAgreement">同意本版本</button>
+          <button class="agreement-secondary" data-id="{{item.id}}" bindtap="openCounterProposal">提出新方案</button>
+        </view>
+      </view>
+      <view class="progress-panel">
+        <view class="progress-steps">
+          <view wx:for="{{item.progressSteps}}" wx:for-item="step" wx:key="label" class="progress-step">
+            <view class="progress-bar {{step.complete || step.active ? 'progress-bar-active' : ''}}"></view>
+            <text class="progress-label {{step.complete || step.active ? 'progress-label-active' : ''}}">{{step.label}}</text>
+          </view>
+        </view>
+        <text class="current-task">当前任务：{{item.currentTaskLabel}}</text>
+        <view wx:if="{{item.canPay}}" class="agreement-actions">
+          <button class="agreement-primary" data-id="{{item.id}}" bindtap="openPayment">
+            {{item.isBankTransfer ? '登记转账' : '去付款'}}
+          </button>
+        </view>
+        <view wx:if="{{paymentOrderId === item.id}}" class="payment-reference-form">
+          <text class="agreement-line">请先按商家提供的账户信息完成转账，再填写交易参考号；商家核实到账前不会标记付款。</text>
+          <input class="agreement-input" value="{{paymentReference}}" placeholder="银行交易参考号" bindinput="onPaymentReferenceInput" />
+          <view class="agreement-actions">
+            <button class="agreement-secondary" bindtap="cancelPayment" disabled="{{paymentSaving}}">取消</button>
+            <button class="agreement-primary" bindtap="submitBankTransfer" loading="{{paymentSaving}}" disabled="{{paymentSaving}}">提交参考号</button>
+          </view>
+        </view>
+        <button class="text-button tracking-toggle" data-id="{{item.id}}" bindtap="toggleTracking">
+          {{expandedOrderId === item.id ? '收起进度' : '查看 / 更新进度'}}
+        </button>
+      </view>
+      <view wx:if="{{expandedOrderId === item.id}}" class="tracking-panel">
+        <view class="tracking-heading">
+          <text class="tracking-source">平台物流记录 · 页面打开时加载，支持手动刷新</text>
+          <button class="text-button" bindtap="refreshTracking" loading="{{trackingLoading}}">刷新</button>
+        </view>
+        <text wx:if="{{trackingLoading && !shipments.length}}" class="muted tracking-empty">正在加载物流记录…</text>
+        <text wx:elif="{{trackingError}}" class="tracking-error">{{trackingError}}</text>
+        <view wx:elif="{{!shipments.length}}" class="tracking-empty">
+          <text>暂未创建包裹或收到物流节点。承运商自动追踪尚未接入，不显示虚构地点或预计送达时间。</text>
+        </view>
+  <block wx:if="{{!loading && !error && orders.length}}">
+          <view wx:for="{{shipments}}" wx:for-item="shipment" wx:key="id" class="shipment-card">
+            <text class="shipment-number">{{shipment.shipmentNo}}</text>
+            <text class="shipment-meta">{{shipment.carrier || '承运商未填写'}}{{shipment.trackingNumber ? ' · ' + shipment.trackingNumber : ''}} · {{shipment.statusLabel}}</text>
+            <text class="shipment-meta">平台记录 · 更新于 {{shipment.updatedAt}}</text>
+            <view wx:for="{{shipment.items}}" wx:for-item="shippedItem" wx:key="orderItemId" class="shipment-meta">
+              <text>发货数量：{{shippedItem.quantity}} 件</text>
+            </view>
+            <view wx:if="{{!shipment.trackingEvents.length}}" class="tracking-empty">
+              <text>尚无承运商扫描节点；当前仅有平台发货记录。</text>
+            </view>
+  <block wx:if="{{!submitted && !loading && !error && orders.length}}">
+              <view wx:for="{{shipment.trackingEvents}}" wx:for-item="trackingEvent" wx:key="id" class="tracking-event">
+                <text class="tracking-event-status">{{trackingEvent.status}}</text>
+                <text wx:if="{{trackingEvent.location}}" class="shipment-meta">{{trackingEvent.location}}</text>
+                <text wx:if="{{trackingEvent.description}}" class="shipment-meta">{{trackingEvent.description}}</text>
+                <text class="tracking-event-time">{{trackingEvent.occurredAt}}</text>
+              </view>
+            </block>
+          </view>
+        </block>
+      </view>
+      <view class="order-footer">
+        <text>{{item.totalQty}} 件 · 商品金额 {{item.displayAmount}}</text>
+        <button wx:if="{{item.canCancel}}" class="text-button cancel-button" data-id="{{item.id}}" bindtap="cancelOrder">申请取消</button>
+      </view>
+    </view>
+  </block>
+  <view wx:if="{{agreementDraft}}" class="agreement-modal-mask">
+    <view class="agreement-modal">
+      <view class="agreement-modal-header">
+        <text class="agreement-title">提出新方案</text>
+        <button class="text-button" bindtap="closeCounterProposal" disabled="{{agreementSaving}}">关闭</button>
+      </view>
+      <view class="agreement-form">
+        <text class="form-label">付款计划</text>
+        <picker range="{{agreementPaymentPlanLabels}}" value="{{agreementDraft.paymentPlanIndex}}" data-field="paymentPlan" bindchange="onAgreementPickerChange">
+          <view class="picker-value">{{agreementPaymentPlanLabels[agreementDraft.paymentPlanIndex]}}</view>
+        </picker>
+        <text class="form-label">付款方式</text>
+        <picker range="{{agreementPaymentMethodLabels}}" value="{{agreementDraft.paymentMethodIndex}}" data-field="paymentMethod" bindchange="onAgreementPickerChange">
+          <view class="picker-value">{{agreementPaymentMethodLabels[agreementDraft.paymentMethodIndex]}}</view>
+        </picker>
+        <view wx:if="{{agreementDraft.paymentPlan === 'partial_prepayment'}}" class="form-row">
+          <label class="form-label">预付款数值<input type="digit" value="{{agreementDraft.prepaymentValue}}" data-field="prepaymentValue" bindinput="onAgreementDraftInput" /></label>
+          <picker range="{{agreementPrepaymentModeLabels}}" value="{{agreementDraft.prepaymentMode === 'amount' ? 1 : 0}}" bindchange="onPrepaymentModeChange">
+            <view class="picker-value">{{agreementDraft.prepaymentMode === 'amount' ? '欧元' : '百分比'}}</view>
+          </picker>
+        </view>
+        <label wx:if="{{agreementDraft.paymentPlan === 'custom'}}" class="form-label">自定义预付款金额 (€，可选)<input type="digit" min="0" value="{{agreementDraft.prepaymentValue}}" data-field="prepaymentValue" bindinput="onAgreementDraftInput" /></label>
+        <view wx:if="{{agreementDraft.paymentPlan !== 'full_prepayment'}}">
+          <text class="form-label">余款支付条件</text>
+          <picker range="{{agreementBalanceTriggerLabels}}" value="{{agreementDraft.remainingBalanceTriggerIndex}}" data-field="remainingBalanceTrigger" bindchange="onAgreementPickerChange">
+            <view class="picker-value">{{agreementBalanceTriggerLabels[agreementDraft.remainingBalanceTriggerIndex]}}</view>
+          </picker>
+        </view>
+        <label wx:if="{{agreementDraft.remainingBalanceTrigger === 'date'}}" class="form-label">余款到期日<input type="date" value="{{agreementDraft.remainingBalanceDueAt}}" data-field="remainingBalanceDueAt" bindinput="onAgreementDraftInput" /></label>
+        <label wx:if="{{agreementDraft.paymentPlan === 'custom' || agreementDraft.remainingBalanceTrigger === 'custom'}}" class="form-label">自定义付款条件<textarea value="{{agreementDraft.customPaymentCondition}}" data-field="customPaymentCondition" bindinput="onAgreementDraftInput" maxlength="500" /></label>
+        <label class="form-label">预计交期<input type="date" value="{{agreementDraft.expectedDeliveryAt}}" data-field="expectedDeliveryAt" bindinput="onAgreementDraftInput" /></label>
+        <text class="form-label">供货方式</text>
+        <picker range="{{agreementSupplyModeLabels}}" value="{{agreementDraft.supplyModeIndex}}" data-field="supplyMode" bindchange="onAgreementPickerChange">
+          <view class="picker-value">{{agreementSupplyModeLabels[agreementDraft.supplyModeIndex]}}</view>
+        </picker>
+        <view class="form-row">
+          <label class="form-label">运费 (€)<input type="digit" min="0" value="{{agreementDraft.shippingFee}}" data-field="shippingFee" bindinput="onAgreementDraftInput" /></label>
+          <label class="form-label">折扣 (€)<input type="digit" min="0" value="{{agreementDraft.discountAmount}}" data-field="discountAmount" bindinput="onAgreementDraftInput" /></label>
+        </view>
+        <view wx:for="{{agreementDraft.items}}" wx:for-item="draftItem" wx:for-index="index" wx:key="orderItemId" class="agreement-item-edit">
+          <text class="agreement-line">{{draftItem.orderItemId}}</text>
+          <view class="form-row">
+            <label class="form-label">数量<input type="number" min="1" value="{{draftItem.quantity}}" data-index="{{index}}" data-field="quantity" bindinput="onAgreementDraftInput" /></label>
+            <label class="form-label">单价 (€)<input type="digit" min="0.01" value="{{draftItem.unitPrice}}" data-index="{{index}}" data-field="unitPrice" bindinput="onAgreementDraftInput" /></label>
+          </view>
+        </view>
+      </view>
+      <view class="agreement-actions">
+        <button class="agreement-secondary" bindtap="closeCounterProposal" disabled="{{agreementSaving}}">取消</button>
+        <button class="agreement-primary" bindtap="submitCounterProposal" loading="{{agreementSaving}}" disabled="{{agreementSaving}}">发送新版本</button>
+      </view>
+    </view>
+  </view>
+</view>

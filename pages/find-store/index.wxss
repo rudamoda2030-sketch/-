@@ -1,0 +1,488 @@
+.find-store-page {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 40rpx 34rpx 150rpx;
+  background: linear-gradient(160deg, #faf9f7 0%, #f1efeb 100%);
+  color: #111;
+}
+
+.find-store-content {
+  width: 100%;
+  max-width: 640rpx;
+  box-sizing: border-box;
+  margin-top: -54rpx;
+  padding: 52rpx 34rpx 34rpx;
+  border: 1rpx solid rgba(75, 65, 52, 0.08);
+  border-radius: 36rpx;
+  background: #fff;
+  box-shadow: 0 24rpx 72rpx rgba(45, 38, 29, 0.09), 0 3rpx 10rpx rgba(45, 38, 29, 0.025);
+}
+
+.find-store-title {
+  position: relative;
+  display: block;
+  margin: 0 0 34rpx 4rpx;
+  padding-left: 20rpx;
+  color: #1d1b19;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 46rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  line-height: 1.2;
+}
+
+.find-store-title::before {
+  position: absolute;
+  top: 8rpx;
+  bottom: 8rpx;
+  left: 0;
+  width: 4rpx;
+  border-radius: 4rpx;
+  background: #a68b64;
+  content: "";
+}
+
+.store-code-field {
+  display: flex;
+  height: 104rpx;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 12rpx 0 26rpx;
+  border: 1rpx solid #e8e4dd;
+  border-radius: 26rpx;
+  background: #faf9f7;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.store-code-field:focus-within {
+  border-color: #b6a487;
+  background: #fff;
+  box-shadow: 0 0 0 5rpx rgba(166, 139, 100, 0.08);
+}
+
+.store-code-input {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  color: #1d1b19;
+  font-size: 27rpx;
+  letter-spacing: 1.5rpx;
+}
+
+.store-code-placeholder {
+  color: #a19b92;
+  font-size: 25rpx;
+  letter-spacing: 0;
+}
+
+.scan-button {
+  display: flex;
+  width: 78rpx;
+  height: 78rpx;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 22rpx;
+  background: linear-gradient(145deg, #272522, #121211);
+  box-shadow: 0 5rpx 12rpx rgba(29, 27, 25, 0.14);
+}
+
+.scan-button:active {
+  transform: scale(0.96);
+  opacity: 0.88;
+}
+
+.scan-mark {
+  position: relative;
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.scan-corner {
+  position: absolute;
+  width: 11rpx;
+  height: 11rpx;
+  border-color: #fff;
+  border-style: solid;
+}
+
+.scan-corner-tl {
+  top: 0;
+  left: 0;
+  border-width: 3rpx 0 0 3rpx;
+}
+
+.scan-corner-tr {
+  top: 0;
+  right: 0;
+  border-width: 3rpx 3rpx 0 0;
+}
+
+.scan-corner-bl {
+  bottom: 0;
+  left: 0;
+  border-width: 0 0 3rpx 3rpx;
+}
+
+.scan-corner-br {
+  right: 0;
+  bottom: 0;
+  border-width: 0 3rpx 3rpx 0;
+}
+
+.scan-center {
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 2rpx;
+  background: #fff;
+}
+
+.find-store-button {
+  display: flex;
+  height: 98rpx;
+  align-items: center;
+  justify-content: center;
+  margin-top: 22rpx;
+  border: 0;
+  border-radius: 26rpx;
+  background: linear-gradient(135deg, #242321 0%, #111110 100%);
+  color: #fff;
+  font-size: 27rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  box-shadow: 0 12rpx 26rpx rgba(29, 27, 25, 0.17);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.find-store-button::after {
+  border: 0;
+}
+
+.find-store-button:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 6rpx 14rpx rgba(29, 27, 25, 0.12);
+}
+
+.find-store-button[disabled] {
+  background: #555;
+  color: #fff;
+  box-shadow: none;
+}
+
+.find-store-links {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 16rpx;
+}
+
+.find-store-link {
+  display: flex;
+  height: 84rpx;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border: 1rpx solid #ebe8e2;
+  border-radius: 23rpx;
+  background: #fff;
+  color: #393631;
+  font-size: 23rpx;
+  font-weight: 500;
+  letter-spacing: 0.5rpx;
+  box-shadow: 0 5rpx 16rpx rgba(45, 38, 29, 0.04);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.find-store-link::after {
+  border: 0;
+}
+
+.find-store-link:active {
+  transform: scale(0.98);
+  background: #f8f6f2;
+}
+
+.find-store-message {
+  display: block;
+  margin-top: 20rpx;
+  padding: 18rpx 20rpx;
+  border: 1rpx solid #eee2d8;
+  border-radius: 20rpx;
+  background: #fbf6f1;
+  color: #67594c;
+  font-size: 22rpx;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.find-store-results {
+  margin-top: 16rpx;
+  overflow: hidden;
+  border: 1rpx solid #eee9e1;
+  border-radius: 20rpx;
+  background: #fff;
+}
+
+.find-store-result {
+  display: flex;
+  min-height: 92rpx;
+  align-items: center;
+  gap: 18rpx;
+  padding: 14rpx 18rpx;
+  border-bottom: 1rpx solid #f0ede8;
+}
+
+.find-store-result:last-child {
+  border-bottom: 0;
+}
+
+.find-store-result-logo {
+  width: 64rpx;
+  height: 64rpx;
+  flex: none;
+  border-radius: 16rpx;
+  background: #f0ede7;
+}
+
+.find-store-result-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #76684f;
+  font-size: 27rpx;
+}
+
+.find-store-result-info {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 5rpx;
+}
+
+.find-store-result-name {
+  overflow: hidden;
+  color: #24221f;
+  font-size: 24rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.find-store-result-location {
+  color: #827c73;
+  font-size: 19rpx;
+}
+
+.find-store-result-arrow {
+  color: #8e806b;
+  font-size: 34rpx;
+}
+
+.my-card-entry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 28rpx auto 0;
+  padding: 8rpx 14rpx;
+  color: #827865;
+  font-size: 21rpx;
+  letter-spacing: 1rpx;
+  text-align: center;
+}
+
+.my-card-qr-icon {
+  position: relative;
+  width: 22rpx;
+  height: 22rpx;
+  flex: none;
+  margin-right: 9rpx;
+  color: #827865;
+}
+
+.my-card-qr-corner {
+  position: absolute;
+  width: 7rpx;
+  height: 7rpx;
+  box-sizing: border-box;
+  border: 2rpx solid currentColor;
+  border-radius: 1rpx;
+}
+
+.my-card-qr-tl {
+  top: 0;
+  left: 0;
+}
+
+.my-card-qr-tr {
+  top: 0;
+  right: 0;
+}
+
+.my-card-qr-bl {
+  bottom: 0;
+  left: 0;
+}
+
+.my-card-qr-dot {
+  position: absolute;
+  width: 4rpx;
+  height: 4rpx;
+  border-radius: 1rpx;
+  background: currentColor;
+}
+
+.my-card-qr-dot-one {
+  top: 10rpx;
+  left: 10rpx;
+}
+
+.my-card-qr-dot-two {
+  right: 0;
+  bottom: 1rpx;
+}
+
+.my-card-qr-dot-three {
+  top: 9rpx;
+  right: 2rpx;
+}
+
+.my-card-message {
+  display: block;
+  margin-top: 8rpx;
+  color: #8b857c;
+  font-size: 20rpx;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.my-card-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 18rpx;
+}
+
+.my-card-register,
+.my-card-login {
+  display: flex;
+  height: 72rpx;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border-radius: 18rpx;
+  font-size: 20rpx;
+}
+
+.my-card-register {
+  background: #242321;
+  color: #fff;
+}
+
+.my-card-login {
+  border: 1rpx solid #e8e3db;
+  background: #fff;
+  color: #49453f;
+}
+
+.my-card-register::after,
+.my-card-login::after {
+  border: 0;
+}
+
+.merchant-card {
+  margin-top: 16rpx;
+  padding: 26rpx;
+  border: 1rpx solid #ece6dc;
+  border-radius: 24rpx;
+  background: linear-gradient(145deg, #fff 0%, #faf8f4 100%);
+  box-shadow: 0 10rpx 28rpx rgba(45, 38, 29, 0.06);
+}
+
+.merchant-card-heading {
+  display: flex;
+  align-items: center;
+}
+
+.merchant-card-logo {
+  width: 82rpx;
+  height: 82rpx;
+  flex: none;
+  border-radius: 22rpx;
+  background: #f0ede7;
+}
+
+.merchant-card-logo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #76684f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34rpx;
+}
+
+.merchant-card-identity {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin-left: 20rpx;
+}
+
+.merchant-card-name {
+  overflow: hidden;
+  color: #24221f;
+  font-size: 27rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.merchant-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid #eee9e1;
+  color: #777168;
+  font-size: 20rpx;
+}
+
+.merchant-card-qr {
+  display: block;
+  width: 260rpx;
+  height: 260rpx;
+  margin: 20rpx auto 0;
+  background: #fff;
+}
+
+.merchant-card-qr-label {
+  display: block;
+  margin-top: 6rpx;
+  color: #777168;
+  font-size: 19rpx;
+  text-align: center;
+}
+
+.merchant-card-share {
+  display: flex;
+  height: 72rpx;
+  align-items: center;
+  justify-content: center;
+  margin: 20rpx 0 0;
+  border: 1rpx solid #ded6c9;
+  border-radius: 18rpx;
+  background: #fff;
+  color: #37332c;
+  font-size: 21rpx;
+}
+
+.merchant-card-share::after {
+  border: 0;
+}

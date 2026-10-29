@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "RUDA 商品",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "site-header": "/components/site-header/index"
+  }
+}

@@ -1,0 +1,128 @@
+<view class="profile-page">
+  <view class="identity">
+    <view class="identity-main" bindtap="openIdentity">
+      <image wx:if="{{avatarUrl}}" class="identity-avatar" src="{{avatarUrl}}" mode="aspectFill" />
+      <view wx:else class="identity-avatar identity-avatar-fallback">{{initial}}</view>
+      <view class="identity-copy">
+        <view class="identity-heading">
+          <text class="identity-name">{{displayName}}</text>
+          <text wx:if="{{statusLabel}}" class="identity-chip identity-chip-{{statusTone}}">{{statusLabel}}</text>
+        </view>
+        <text class="identity-meta">{{identityMeta}}</text>
+      </view>
+    </view>
+    <view wx:if="{{!isLoggedIn}}" class="identity-action" bindtap="goLogin">登录 / 注册</view>
+  </view>
+
+  <view class="panel">
+    <view class="panel-head">
+      <text class="panel-title">我的订单</text>
+      <view class="panel-link" bindtap="openOrders" data-filter="all">
+        <text>全部订单</text>
+        <view class="chevron"></view>
+      </view>
+    </view>
+    <view wx:if="{{!isLoggedIn}}" class="panel-note" bindtap="goLogin">登录后查看订单与状态</view>
+    <view wx:elif="{{orderLoading}}" class="panel-note">正在加载订单…</view>
+    <view wx:elif="{{orderError}}" class="panel-note panel-note-error" bindtap="loadOverview">{{orderError}}，点击重试</view>
+    <view wx:elif="{{overviewNote}}" class="panel-note">{{overviewNote}}</view>
+    <view wx:else class="order-grid">
+      <view class="order-cell" bindtap="openOrders" data-filter="pendingPayment">
+        <text class="order-count">{{orderSummary.pendingPayment}}</text>
+        <text class="order-label">待付款</text>
+      </view>
+      <view class="order-cell" bindtap="openOrders" data-filter="toShip">
+        <text class="order-count">{{orderSummary.toShip}}</text>
+        <text class="order-label">待发货</text>
+      </view>
+      <view class="order-cell" bindtap="openOrders" data-filter="shipping">
+        <text class="order-count">{{orderSummary.shipping}}</text>
+        <text class="order-label">运输中</text>
+      </view>
+      <view class="order-cell" bindtap="openOrders" data-filter="afterSales">
+        <text class="order-count">{{orderSummary.afterSales}}</text>
+        <text class="order-label">售后服务</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="rows">
+    <view class="row" bindtap="openCodeModal">
+      <view class="row-icon icon-key"><view class="icon-key-teeth"></view></view>
+      <text class="row-label">授权码找店</text>
+      <view class="chevron"></view>
+    </view>
+    <view class="row" bindtap="openAuthorizations">
+      <view class="row-icon icon-shield"></view>
+      <text class="row-label">商品授权</text>
+      <text wx:if="{{authorizationError}}" class="row-state">{{authorizationError}}</text>
+      <text wx:elif="{{approvedAuthorizationCount > 0}}" class="row-badge">{{approvedAuthorizationCount}}</text>
+      <view class="chevron"></view>
+    </view>
+    <view class="row row-last" bindtap="openNotifications">
+      <view class="row-icon icon-bell"><view class="icon-bell-clapper"></view></view>
+      <text class="row-label">消息通知</text>
+      <text wx:if="{{notificationError}}" class="row-state">{{notificationError}}</text>
+      <text wx:elif="{{unreadCount > 0}}" class="row-badge">{{unreadCount}}</text>
+      <view class="chevron"></view>
+    </view>
+  </view>
+
+  <view class="rows">
+    <view class="row" bindtap="openSettings">
+      <text class="row-label">个人资料与账户安全</text>
+      <view class="chevron"></view>
+    </view>
+    <view class="row" bindtap="openSettings">
+      <text class="row-label">语言设置</text>
+      <view class="chevron"></view>
+    </view>
+    <view class="row" bindtap="openSupport">
+      <text class="row-label">帮助与联系客服</text>
+      <view class="chevron"></view>
+    </view>
+    <view class="row" bindtap="openPrivacy">
+      <text class="row-label">隐私政策</text>
+      <view class="chevron"></view>
+    </view>
+    <view class="row {{hasMerchantAccess ? '' : 'row-last'}}" bindtap="openTerms">
+      <text class="row-label">服务条款</text>
+      <view class="chevron"></view>
+    </view>
+    <view wx:if="{{hasMerchantAccess}}" class="row row-last" bindtap="openMerchantWorkspace">
+      <text class="row-label">商家中心</text>
+      <view class="chevron"></view>
+    </view>
+  </view>
+
+  <text class="profile-footer">RUDA · Fashion Business</text>
+</view>
+
+<view wx:if="{{codeModalOpen}}" class="modal-mask" bindtap="closeCodeModal">
+  <view class="modal-sheet" catchtap="noop">
+    <view class="modal-head">
+      <text class="modal-title">授权码找店</text>
+      <view class="modal-close" aria-label="关闭" bindtap="closeCodeModal">
+        <view class="modal-close-bar modal-close-bar-one"></view>
+        <view class="modal-close-bar modal-close-bar-two"></view>
+      </view>
+    </view>
+    <text class="modal-hint">请输入商家提供的授权码</text>
+    <input
+      class="modal-input"
+      type="number"
+      maxlength="6"
+      value="{{codeInput}}"
+      placeholder="6 位数字"
+      placeholder-class="modal-input-placeholder"
+      focus="{{codeModalOpen}}"
+      confirm-type="done"
+      bindinput="onCodeInput"
+      bindconfirm="submitCode"
+    />
+    <text wx:if="{{codeError}}" class="modal-error">{{codeError}}</text>
+    <button class="modal-submit" loading="{{codeLoading}}" disabled="{{codeLoading}}" bindtap="submitCode">
+      {{codeLoading ? '正在验证' : '验证并进入店铺'}}
+    </button>
+  </view>
+</view>

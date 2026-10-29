@@ -1,0 +1,159 @@
+.modagpt-screen {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  padding-bottom: 160rpx;
+}
+
+.intro {
+  display: block;
+  margin-top: 12rpx;
+}
+
+.tryon-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 24rpx 0 0;
+  padding: 22rpx 26rpx;
+  border: 1rpx solid #ebe7e1;
+  border-radius: 10rpx;
+  background: #fff;
+  color: #393530;
+  font-size: 24rpx;
+  text-align: left;
+}
+
+.tryon-entry text {
+  color: #9a7c5c;
+  font-size: 32rpx;
+}
+
+.studio-intro {
+  margin-top: 56rpx;
+  padding: 34rpx;
+  border: 1rpx solid #ebe7e1;
+  border-radius: 12rpx;
+  background: #fff;
+}
+
+.studio-title {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 36rpx;
+}
+
+.studio-copy {
+  display: block;
+  margin-top: 14rpx;
+  color: #89847e;
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+
+.prompt-list {
+  margin-top: 26rpx;
+}
+
+.prompt-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 82rpx;
+  margin: 0 0 14rpx;
+  padding: 0 20rpx;
+  border: 1rpx solid #ebe7e1;
+  border-radius: 10rpx;
+  background: #fdfcfb;
+  color: #514b45;
+  font-size: 22rpx;
+  text-align: left;
+}
+
+.prompt-arrow {
+  color: #9a7c5c;
+  font-size: 28rpx;
+}
+
+.message-list {
+  flex: 1;
+  margin: 34rpx 0 24rpx;
+}
+
+.message-row {
+  display: flex;
+  margin-bottom: 20rpx;
+}
+
+.user-row {
+  justify-content: flex-end;
+}
+
+.message-bubble {
+  max-width: 86%;
+  padding: 22rpx 24rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.user-bubble {
+  background: #201e1b;
+  color: #fff;
+}
+
+.assistant-bubble {
+  border: 1rpx solid #ebe7e1;
+  background: #fff;
+  color: #393530;
+}
+
+.error-note {
+  margin-bottom: 14rpx;
+  color: #9b3f36;
+  font-size: 22rpx;
+}
+
+.composer {
+  display: flex;
+  align-items: flex-end;
+  padding: 14rpx;
+  border: 1rpx solid #e5e0d9;
+  border-radius: 12rpx;
+  background: #fff;
+}
+
+.composer-input {
+  min-height: 56rpx;
+  max-height: 220rpx;
+  flex: 1;
+  padding: 12rpx;
+  color: #1d1b19;
+  font-size: 24rpx;
+}
+
+.composer-placeholder {
+  color: #aaa39b;
+}
+
+.send-button {
+  width: 112rpx;
+  min-height: 64rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 8rpx;
+  background: #201e1b;
+  color: #fff;
+  font-size: 22rpx;
+}
+
+.send-button[disabled] {
+  background: #c9c4be;
+}
+
+.privacy-note {
+  margin-top: 12rpx;
+  color: #89847e;
+  font-size: 18rpx;
+}

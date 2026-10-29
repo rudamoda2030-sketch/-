@@ -1,0 +1,651 @@
+<view wx:if="{{featureEnabled}}" class="fashion-screen {{browseView === 'grid' ? 'fashion-browse-screen' : 'fashion-feed-screen'}}" style="height: {{windowHeight}}px; min-height: {{windowHeight}}px">
+  <view class="fashion-menu-button" style="top: {{topNavigationTop}}px" aria-label="打开个人中心与设置" bindtap="openSettings">
+    <view class="fashion-menu-line"></view>
+    <view class="fashion-menu-line"></view>
+    <view class="fashion-menu-line"></view>
+  </view>
+  <view wx:if="{{browseView === 'grid'}}" class="fashion-masthead" style="top: {{topNavigationTop}}px">
+    <view class="fashion-wordmark"><text>RUDA FASHION</text><text class="fashion-edition">THE FASHION EDIT</text></view>
+  </view>
+  <view class="fashion-topbar" style="top: {{topNavigationTop}}px; right: {{searchRight}}px">
+    <view wx:if="{{browseView === 'feed'}}" class="fashion-back-button" bindtap="returnToMagazine" aria-label="返回作品列表">‹</view>
+    <view class="fashion-bell-button" bindtap="openFashionAnalytics" aria-label="作品数据">
+      <text class="fashion-bell-label">数据</text>
+    </view>
+    <view class="fashion-bell-button" bindtap="openFashionNotifications" aria-label="消息通知">
+      <text class="fashion-bell-label">消息</text>
+      <text wx:if="{{notificationUnread > 0}}" class="fashion-bell-badge">{{notificationUnread > 99 ? '99+' : notificationUnread}}</text>
+    </view>
+    <view class="fashion-search-button" bindtap="openFashionSearch" aria-label="搜索"><view class="fashion-search-icon"></view></view>
+  </view>
+
+  <view class="feed-top-navigation" style="top: {{browseView === 'grid' ? topNavigationTop + 52 : topNavigationTop}}px; right: {{feedNavRight}}px">
+    <scroll-view class="mode-scroll" scroll-x="true" scroll-into-view="active-mode-{{mode}}" show-scrollbar="false">
+      <view class="mode-row">
+        <view wx:for="{{modes}}" wx:key="id" id="active-mode-{{item.id}}" class="mode-item {{mode === item.id ? 'mode-active' : ''}}" data-index="{{index}}" bindtap="onModeChange">
+          {{item.id === 'prato' && cityIndex > 0 ? cityLabels[cityIndex] : item.label}}
+          <text wx:if="{{item.id === 'prato' && mode === 'prato'}}" class="mode-city-arrow" data-city="{{cities[cityIndex]}}" catchtap="openCityPicker">⌄</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  <view class="fashion-create-fab" style="bottom: {{feedBottomOffset + 14}}px" bindtap="openComposer"><text>＋</text></view>
+
+  <view wx:if="{{browseView === 'grid'}}" class="magazine-category-bar {{discoverTags.length ? 'magazine-category-bar-tall' : ''}} magazine-category-bar-season" style="top: {{topNavigationTop + 96}}px">
+    <text class="magazine-category-heading">探索分类</text>
+    <scroll-view class="magazine-category-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="magazine-category-row">
+        <view wx:for="{{categories}}" wx:key="*this" class="magazine-category {{categoryIndex === index ? 'magazine-category-active' : ''}}" data-index="{{index}}" bindtap="onCategoryChange">{{item}}</view>
+      </view>
+    </scroll-view>
+    <scroll-view class="magazine-tag-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="magazine-tag-row">
+        <view wx:for="{{seasonOptions}}" wx:key="*this" class="magazine-tag {{seasonIndex === index ? 'magazine-tag-active' : ''}}" data-index="{{index}}" bindtap="onSeasonFilterChange">{{item}}</view>
+      </view>
+    </scroll-view>
+    <scroll-view wx:if="{{discoverTags.length}}" class="magazine-tag-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="magazine-tag-row">
+        <view wx:for="{{discoverTags}}" wx:key="tag" class="magazine-tag" data-tag="{{item.tag}}" bindtap="onDiscoverTagTap">#{{item.tag}} · {{item.posts}}</view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view wx:if="{{loading}}" class="state-box"><view class="loader-dot"></view><text>正在加载</text></view>
+  <view wx:elif="{{error}}" class="state-box"><text class="state-title">暂时无法加载</text><text class="state-copy">{{error}}</text><view class="retry-button" bindtap="onRetry">重试</view></view>
+  <view wx:elif="{{mode === 'merchants' ? merchants.length === 0 : visibleItems.length === 0}}" class="state-box"><text class="state-title">这里还没有内容</text><text class="state-copy">{{browseView === 'grid' ? '当前分类暂无公开作品' : '换个筛选条件，或发布第一条灵感。'}}</text><view class="retry-button" bindtap="openComposer">发布内容</view></view>
+
+  <view wx:elif="{{mode === 'merchants'}}" class="merchant-list">
+    <view wx:for="{{merchants}}" wx:key="id" class="merchant-card" data-index="{{index}}" bindtap="onMerchantTap">
+      <image wx:if="{{item.coverUrl}}" class="merchant-cover" src="{{item.coverUrl}}" mode="aspectFill" lazy-load />
+      <view wx:else class="merchant-cover merchant-cover-empty"></view>
+      <view class="merchant-info">
+        <image wx:if="{{item.logoUrl}}" class="merchant-logo" src="{{item.logoUrl}}" mode="aspectFill" />
+        <view class="merchant-name-wrap"><text class="merchant-name">{{item.name}}</text><text wx:if="{{item.isVerified}}" class="verified-mark">已认证</text></view>
+        <text wx:if="{{item.city}}" class="merchant-city">{{item.city}}</text>
+        <text wx:if="{{item.tagline_zh || item.tagline}}" class="merchant-tagline">{{item.tagline_zh || item.tagline}}</text>
+        <view wx:if="{{item.specialties && item.specialties.length}}" class="merchant-tags"><text wx:for="{{item.specialties}}" wx:for-item="specialty" wx:key="*this" class="merchant-tag">{{specialty}}</text></view>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view wx:elif="{{browseView === 'grid'}}" class="magazine-scroll" style="top: {{topNavigationTop + 220}}px; bottom: {{feedBottomOffset}}px" scroll-y="true" scroll-top="{{magazineScrollTop}}" enhanced="true" show-scrollbar="false" lower-threshold="360" bindscroll="onMagazineScroll" bindscrolltolower="loadMagazineMore">
+    <view class="magazine-columns">
+      <view class="magazine-column">
+        <view wx:for="{{magazineColumns[0]}}" wx:key="id" class="magazine-card" data-id="{{item.id}}" bindtap="openMagazinePost">
+          <view class="magazine-cover-wrap" style="height: {{item.magazineCoverHeight}}rpx">
+            <image class="magazine-cover" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+            <text wx:if="{{item.hasVideo}}" class="magazine-media-mark">▶</text>
+            <text wx:if="{{item.mediaCount > 1}}" class="magazine-count-mark">{{item.mediaCount}} 张</text>
+            <text wx:if="{{item.products.length}}" class="magazine-product-mark" data-product-id="{{item.productId}}" catchtap="openLinkedProduct">商品</text>
+          </view>
+          <view class="magazine-card-copy">
+            <text class="magazine-card-title">{{item.text || item.displayTitle}}</text>
+            <view class="magazine-card-meta">
+              <image wx:if="{{item.creatorAvatarUrl}}" class="magazine-avatar" src="{{item.creatorAvatarUrl}}" mode="aspectFill" lazy-load />
+              <text wx:else class="magazine-avatar magazine-avatar-fallback">{{item.creatorInitial}}</text>
+              <text class="magazine-creator">{{item.displayCreator}}</text>
+              <text wx:if="{{item.category}}" class="magazine-card-category">{{item.category}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="magazine-column">
+        <view wx:for="{{magazineColumns[1]}}" wx:key="id" class="magazine-card" data-id="{{item.id}}" bindtap="openMagazinePost">
+          <view class="magazine-cover-wrap" style="height: {{item.magazineCoverHeight}}rpx">
+            <image class="magazine-cover" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+            <text wx:if="{{item.hasVideo}}" class="magazine-media-mark">▶</text>
+            <text wx:if="{{item.mediaCount > 1}}" class="magazine-count-mark">{{item.mediaCount}} 张</text>
+            <text wx:if="{{item.products.length}}" class="magazine-product-mark" data-product-id="{{item.productId}}" catchtap="openLinkedProduct">商品</text>
+          </view>
+          <view class="magazine-card-copy">
+            <text class="magazine-card-title">{{item.text || item.displayTitle}}</text>
+            <view class="magazine-card-meta">
+              <image wx:if="{{item.creatorAvatarUrl}}" class="magazine-avatar" src="{{item.creatorAvatarUrl}}" mode="aspectFill" lazy-load />
+              <text wx:else class="magazine-avatar magazine-avatar-fallback">{{item.creatorInitial}}</text>
+              <text class="magazine-creator">{{item.displayCreator}}</text>
+              <text wx:if="{{item.category}}" class="magazine-card-category">{{item.category}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{loadingMore}}" class="magazine-loading">正在载入更多作品</view>
+    <view wx:elif="{{!hasMore && items.length}}" class="magazine-loading">— 已经到底 —</view>
+  </scroll-view>
+
+  <view wx:else class="feed-viewport" style="top: 0; bottom: {{feedBottomOffset}}px">
+    <swiper class="feed-swiper" current="{{activeFeedIndex}}" vertical="true" duration="260" circular="false" bindchange="onFeedSwiperChange" disable-touch="{{commentPost || composerOpen || mediaActionsItem}}">
+      <swiper-item wx:for="{{visibleItems}}" wx:key="id" class="feed-swiper-item">
+        <view class="feed-page">
+          <view class="media-stage">
+            <swiper wx:if="{{item.mediaCount > 1}}" class="media-gallery" current="{{item.mediaIndex}}" circular="false" duration="220" bindchange="onGalleryChange" data-id="{{item.id}}">
+              <swiper-item wx:for="{{item.mediaItems}}" wx:for-item="media" wx:key="index" class="gallery-item">
+                <video wx:if="{{item.showVideo && media.type === 'video' && index === item.mediaIndex && !videoRetrying}}" id="fashion-active-video" data-post-id="{{item.id}}" class="feed-video" src="{{media.url}}" poster="{{media.posterUrl}}" loop="true" muted="{{videoMuted}}" controls="false" show-center-play-btn="false" show-play-btn="false" enable-progress-gesture="false" object-fit="cover" bindtap="onVideoTap" bindplay="onVideoPlay" bindpause="onVideoPause" bindtimeupdate="onVideoTimeUpdate" bindwaiting="onVideoWaiting" binderror="onVideoError" />
+                <view wx:elif="{{media.type === 'image' && media.imageFailed}}" class="media-error" data-id="{{item.id}}" data-media-index="{{index}}" catchtap="retryMediaImage"><text>图片加载失败</text><text class="media-error-retry">点击重试</text></view>
+                <image wx:elif="{{media.type === 'image'}}" class="feed-image" src="{{media.url}}" mode="aspectFill" lazy-load data-id="{{item.id}}" data-media-index="{{index}}" binderror="onMediaImageError" />
+                <image wx:elif="{{media.posterUrl}}" class="feed-image" src="{{media.posterUrl}}" mode="aspectFill" lazy-load />
+                <view wx:else class="media-placeholder"></view>
+              </swiper-item>
+            </swiper>
+            <block wx:else>
+              <video wx:if="{{item.showVideo && item.currentMedia.type === 'video' && !videoRetrying}}" id="fashion-active-video" data-post-id="{{item.id}}" class="feed-video" src="{{item.currentMedia.url}}" poster="{{item.currentMedia.posterUrl}}" loop="true" muted="{{videoMuted}}" controls="false" show-center-play-btn="false" show-play-btn="false" enable-progress-gesture="false" object-fit="cover" bindtap="onVideoTap" bindplay="onVideoPlay" bindpause="onVideoPause" bindtimeupdate="onVideoTimeUpdate" bindwaiting="onVideoWaiting" binderror="onVideoError" />
+              <view wx:elif="{{item.currentMedia.type === 'image' && item.currentMedia.imageFailed}}" class="media-error" data-id="{{item.id}}" data-media-index="{{item.mediaIndex}}" catchtap="retryMediaImage"><text>图片加载失败</text><text class="media-error-retry">点击重试</text></view>
+              <image wx:elif="{{item.currentMedia.type === 'image'}}" class="feed-image" src="{{item.currentMedia.url}}" mode="aspectFill" lazy-load data-id="{{item.id}}" data-media-index="{{item.mediaIndex}}" binderror="onMediaImageError" />
+              <image wx:elif="{{item.currentMedia.posterUrl}}" class="feed-image" src="{{item.currentMedia.posterUrl}}" mode="aspectFill" lazy-load />
+              <view wx:else class="media-placeholder"></view>
+            </block>
+            <view wx:if="{{item.showVideo && !videoFailed && !videoPlaying && !videoLoading}}" class="video-play-indicator" catchtap="onVideoTap">▶</view>
+            <view wx:if="{{item.showVideo && videoLoading && !videoFailed}}" class="video-buffering"><view class="video-buffering-dot"></view><text>正在加载</text></view>
+            <view wx:if="{{item.showVideo}}" class="video-progress-track"><view class="video-progress-fill" style="width: {{videoProgress * 100}}%"></view></view>
+            <view wx:if="{{item.showVideo}}" class="video-sound-button" catchtap="toggleVideoSound">{{videoMuted ? '开启声音' : '静音'}}</view>
+            <view wx:if="{{videoFailed && item.isActive}}" class="video-failed" catchtap="retryActiveVideo"><text>视频播放失败</text><text class="video-retry">点击重试</text></view>
+            <view wx:if="{{item.mediaCount > 1}}" class="gallery-count">{{item.mediaIndex + 1}}/{{item.mediaCount}}</view>
+
+            <view class="creator-overlay">
+              <view class="creator-meta">
+                <text class="creator-name" data-id="{{item.id}}" catchtap="openCreator">{{item.displayCreator}}</text>
+                <text wx:if="{{item.city}}" class="creator-detail">{{item.city}}</text>
+              </view>
+              <view class="feed-copy">
+                <view class="feed-heading">
+                  <text class="feed-title">{{item.displayTitle}}</text>
+                  <text wx:if="{{item.category}}" class="category-label">{{item.category}}</text>
+                </view>
+                <text wx:if="{{item.text}}" class="feed-text">{{item.text}}</text>
+                <view wx:if="{{item.translationVisible}}" class="feed-translation">
+                  <text class="feed-translation-label">翻译</text>
+                  <text class="feed-translation-text">{{item.translation}}</text>
+                </view>
+                <view class="feed-inline-actions">
+                  <text class="feed-inline-action {{item.translationPending ? 'feed-inline-action-busy' : ''}}" data-id="{{item.id}}" catchtap="translatePost">{{item.translationPending ? '翻译中' : (item.translationVisible ? '显示原文' : '翻译')}}</text>
+                  <text class="feed-inline-action" data-id="{{item.id}}" catchtap="openMediaActions">更多</text>
+                </view>
+                <view wx:if="{{item.hashtags && item.hashtags.length}}" class="hashtag-row"><text wx:for="{{item.hashtags}}" wx:for-item="tag" wx:key="*this" class="hashtag" data-tag="{{tag}}" catchtap="onHashtagTap">#{{tag}}</text></view>
+                <view wx:if="{{item.products.length}}" class="feed-product-list">
+                  <view wx:for="{{item.products}}" wx:for-item="product" wx:key="id" class="feed-product-link" data-product-id="{{product.id}}" data-post-id="{{item.id}}" catchtap="openLinkedProduct">
+                    <image wx:if="{{product.coverUrl}}" class="feed-product-thumb" src="{{product.coverUrl}}" mode="aspectFill" />
+                    <view class="feed-product-copy"><text class="feed-product-name">{{product.displayName}}</text><text class="feed-product-meta">{{product.styleNo}} · {{product.displayPrice}}</text></view>
+                    <text class="feed-product-arrow">›</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+
+            <view class="action-rail">
+              <view class="rail-avatar" data-id="{{item.id}}" catchtap="openCreator">
+                <image wx:if="{{item.creatorAvatarUrl}}" class="rail-avatar-image" src="{{item.creatorAvatarUrl}}" mode="aspectFill" />
+                <text wx:else>{{item.creatorInitial}}</text>
+                <text wx:if="{{item.creatorId}}" class="avatar-follow-mark {{item.creatorInteraction.following ? 'avatar-followed-mark' : ''}}" data-id="{{item.id}}" catchtap="toggleFollow">{{item.creatorInteraction.following ? '✓' : '+'}}</text>
+              </view>
+              <view class="rail-action" data-id="{{item.id}}" catchtap="toggleLike"><text class="rail-icon {{item.interaction.liked ? 'action-on' : ''}}">{{item.interaction.liked ? '♥' : '♡'}}</text><text>{{item.interaction.likesCount || 0}}</text></view>
+              <view class="rail-action" data-id="{{item.id}}" catchtap="openComments"><view class="rail-comment-icon"><text>•••</text></view><text>{{item.interaction.commentsCount || 0}}</text></view>
+              <view class="rail-action" data-id="{{item.id}}" catchtap="toggleSave"><text class="rail-icon {{item.interaction.saved ? 'action-on' : ''}}">{{item.interaction.saved ? '◆' : '◇'}}</text><text wx:if="{{item.interaction.savesCount > 0}}">{{item.interaction.savesCount}}</text><text wx:else>收藏</text></view>
+              <button class="rail-share" open-type="share" data-post-id="{{item.id}}" data-title="{{item.displayTitle}}"><text class="rail-icon">➤</text><text>分享</text></button>
+            </view>
+            <view class="page-indicator">{{activeFeedIndex + 1}} / {{visibleItems.length}}</view>
+          </view>
+        </view>
+      </swiper-item>
+    </swiper>
+    <view wx:if="{{loadingMore}}" class="loading-more feed-loading-more">正在加载更多</view>
+    <view wx:if="{{error && visibleItems.length}}" class="feed-error" bindtap="onRetry">加载更多失败，点击重试</view>
+  </view>
+</view>
+
+<view wx:if="{{mediaActionsItem}}" class="media-actions-overlay" catchtap="closeMediaActions">
+  <view class="media-actions-sheet" catchtap="noop">
+    <text class="media-actions-title">{{mediaActionsItem.displayTitle}}</text>
+    <view class="media-actions-item" data-id="{{mediaActionsItem.id}}" catchtap="previewPostMedia">查看大图</view>
+    <view class="media-actions-item" data-id="{{mediaActionsItem.id}}" catchtap="savePostMedia">保存到相册</view>
+    <view class="media-actions-item" data-id="{{mediaActionsItem.id}}" catchtap="copyPostLink">复制链接</view>
+    <view class="media-actions-item media-actions-danger" data-id="{{mediaActionsItem.id}}" catchtap="dismissPost">不感兴趣</view>
+    <view class="media-actions-item media-actions-cancel" catchtap="closeMediaActions">取消</view>
+  </view>
+</view>
+
+<view wx:if="{{searchOpen}}" class="fashion-search-overlay">
+  <view class="fashion-search-header" style="padding-top: {{statusBarHeight}}px">
+    <view class="fashion-search-input-wrap">
+      <view class="fashion-search-field-icon"></view>
+      <input class="fashion-search-input" value="{{searchQuery}}" maxlength="100" focus="{{searchOpen}}" placeholder="搜索视频、图片或话题" confirm-type="search" bindinput="onFashionSearchInput" bindconfirm="submitFashionSearch" />
+    </view>
+    <text class="fashion-search-cancel" bindtap="closeFashionSearch">取消</text>
+    <view class="fashion-search-submit" bindtap="submitFashionSearch">搜索</view>
+  </view>
+  <scroll-view class="fashion-search-results" style="top: {{statusBarHeight + 52}}px" scroll-y="true" enhanced="true" show-scrollbar="false" bindscrolltolower="loadMoreFashionSearch">
+    <view wx:if="{{searchLoading && searchResults.length === 0}}" class="fashion-search-state">正在搜索作品</view>
+    <view wx:elif="{{searchError}}" class="fashion-search-state">
+      <text>{{searchError}}</text>
+      <text class="fashion-search-retry" bindtap="submitFashionSearch">重试</text>
+    </view>
+    <view wx:elif="{{searchSubmitted && searchResults.length === 0 && !searchLoading}}" class="fashion-search-state">没有找到相关视频或图片</view>
+    <view wx:elif="{{!searchSubmitted}}" class="fashion-search-hint">搜索时尚视频、图片和话题</view>
+    <view wx:else class="fashion-search-grid">
+      <view wx:for="{{searchResults}}" wx:key="id" class="fashion-search-card" data-id="{{item.id}}" bindtap="openFashionSearchResult">
+        <image class="fashion-search-cover" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+        <view class="fashion-search-type">{{item.hasVideo ? '视频' : '图片'}}<text wx:if="{{item.mediaCount > 1}}"> · {{item.mediaCount}}{{item.mediaType === 'mixed' ? '个素材' : '张'}}</text></view>
+        <text class="fashion-search-title">{{item.displayTitle || item.text}}</text>
+        <text class="fashion-search-creator">{{item.displayCreator}}</text>
+      </view>
+    </view>
+    <view wx:if="{{searchLoading && searchResults.length}}" class="fashion-search-loading-more">加载中</view>
+  </scroll-view>
+</view>
+
+<view wx:if="{{cityPickerOpen}}" class="city-picker-overlay">
+  <view class="city-picker-page">
+    <view class="city-picker-header" style="padding-top: {{statusBarHeight}}px">
+      <text class="city-picker-title">更改所在地区</text>
+      <text class="city-picker-close" bindtap="closeCityPicker">×</text>
+    </view>
+    <view class="city-search-box">
+      <text class="city-search-icon">⌕</text>
+      <input value="{{citySearch}}" placeholder="搜索意大利的地区" confirm-type="search" bindinput="onCitySearch" />
+      <text wx:if="{{citySearch}}" class="city-search-clear" bindtap="clearCitySearch">×</text>
+    </view>
+    <scroll-view class="city-picker-scroll" scroll-y="true" enhanced="true" show-scrollbar="false" scroll-into-view="{{citySectionTarget}}">
+      <view class="city-current-section">
+        <text class="city-section-label">当前所在地区</text>
+        <view class="city-current-pill" data-city="{{cities[cityIndex]}}" bindtap="selectFashionCity"><text class="city-pin">●</text>{{cities[cityIndex] === '全部地区' ? '全部地区' : cities[cityIndex]}}</view>
+      </view>
+      <view wx:if="{{citySearch}}" class="city-results-section">
+        <text class="city-section-label">搜索结果</text>
+        <view wx:if="{{filteredCities.length}}" class="city-result-list">
+          <view wx:for="{{filteredCities}}" wx:key="*this" class="city-result-row" data-city="{{item}}" bindtap="selectFashionCity">{{item}}</view>
+        </view>
+        <text wx:else class="city-no-results">没有找到匹配地区</text>
+      </view>
+      <block wx:else>
+        <view class="city-popular-section">
+          <text class="city-section-label">热门地区</text>
+          <view class="city-popular-grid">
+            <view wx:for="{{popularCities}}" wx:key="*this" class="city-popular-item {{cities[cityIndex] === item ? 'city-selected' : ''}}" data-city="{{item}}" bindtap="selectFashionCity">{{item}}</view>
+          </view>
+        </view>
+        <view wx:for="{{citySections}}" wx:key="letter" id="city-letter-{{item.letter}}" class="city-letter-section">
+          <text class="city-letter-heading">{{item.letter}}</text>
+          <view wx:for="{{item.names}}" wx:for-item="city" wx:key="*this" class="city-letter-row" data-city="{{city}}" bindtap="selectFashionCity">
+            <text>{{city}}</text><text wx:if="{{cities[cityIndex] === city}}" class="city-selected-mark">✓</text>
+          </view>
+        </view>
+      </block>
+      <view class="city-all-option" data-city="全部地区" bindtap="selectFashionCity">全部地区</view>
+    </scroll-view>
+    <view wx:if="{{!citySearch}}" class="city-alphabet-rail">
+      <text wx:for="{{cityAlphabet}}" wx:key="*this" data-letter="{{item}}" bindtap="onCityLetterTap">{{item}}</text>
+    </view>
+  </view>
+</view>
+
+<view wx:if="{{creatorProfileOpen}}" class="creator-profile-overlay" catchtap="closeCreatorProfile">
+  <view class="creator-profile-panel" catchtap="stopTap">
+    <view class="creator-profile-header" style="padding-top: {{statusBarHeight}}px">
+      <text class="creator-profile-close" bindtap="closeCreatorProfile">‹</text>
+      <text class="creator-profile-header-title">创作者</text>
+      <text class="creator-profile-header-spacer"></text>
+    </view>
+    <scroll-view class="creator-profile-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <view wx:if="{{creatorProfileLoading}}" class="creator-profile-state">正在加载创作者资料</view>
+      <view wx:elif="{{creatorProfileError}}" class="creator-profile-state">
+        <text>{{creatorProfileError}}</text>
+        <text class="creator-profile-retry" bindtap="retryCreatorProfile">重试</text>
+      </view>
+      <block wx:elif="{{creatorProfile}}">
+        <view class="creator-profile-summary">
+          <image wx:if="{{creatorProfile.avatarUrl}}" class="creator-profile-avatar" src="{{creatorProfile.avatarUrl}}" mode="aspectFill" />
+          <text wx:else class="creator-profile-avatar creator-profile-avatar-fallback">{{creatorProfile.initial}}</text>
+          <text class="creator-profile-name">{{creatorProfile.displayName || 'RUDA 创作者'}}</text>
+          <text wx:if="{{creatorProfile.bio}}" class="creator-profile-bio">{{creatorProfile.bio}}</text>
+          <view class="creator-profile-stats">
+            <view><text class="creator-profile-stat-value">{{creatorProfile.postsCount || 0}}</text><text class="creator-profile-stat-label">作品</text></view>
+            <view><text class="creator-profile-stat-value">{{creatorProfile.followersCount || 0}}</text><text class="creator-profile-stat-label">关注者</text></view>
+          </view>
+          <view class="creator-profile-follow {{creatorProfile.following ? 'creator-profile-following' : ''}}" bindtap="toggleCreatorProfileFollow">{{creatorProfile.following ? '已关注' : '关注'}}</view>
+          <view wx:if="{{!creatorProfile.isSelf}}" class="creator-profile-actions">
+            <text class="creator-profile-block {{creatorProfile.blocked ? 'creator-profile-blocked' : ''}}" bindtap="toggleCreatorProfileBlock">{{creatorProfile.blocked ? '取消屏蔽' : '屏蔽'}}</text>
+          </view>
+        </view>
+        <view class="creator-profile-section-title">公开作品</view>
+        <view wx:if="{{!creatorProfile.posts.length}}" class="creator-profile-empty">还没有公开作品</view>
+        <view wx:else class="magazine-columns creator-profile-columns">
+          <view class="magazine-column">
+            <view wx:for="{{creatorProfileColumns[0]}}" wx:key="id" class="magazine-card" data-id="{{item.id}}" bindtap="openCreatorProfilePost">
+              <view class="magazine-cover-wrap" style="height: {{item.magazineCoverHeight}}rpx">
+                <image class="magazine-cover" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+                <text wx:if="{{item.hasVideo}}" class="magazine-media-mark">▶</text>
+                <text wx:if="{{item.mediaCount > 1}}" class="magazine-count-mark">{{item.mediaCount}} 张</text>
+                <text wx:if="{{item.products.length}}" class="magazine-product-mark" data-product-id="{{item.productId}}" catchtap="openLinkedProduct">商品</text>
+              </view>
+              <view class="magazine-card-copy"><text class="magazine-card-title">{{item.text || item.displayTitle}}</text><text wx:if="{{item.category}}" class="magazine-card-category">{{item.category}}</text></view>
+            </view>
+          </view>
+          <view class="magazine-column">
+            <view wx:for="{{creatorProfileColumns[1]}}" wx:key="id" class="magazine-card" data-id="{{item.id}}" bindtap="openCreatorProfilePost">
+              <view class="magazine-cover-wrap" style="height: {{item.magazineCoverHeight}}rpx">
+                <image class="magazine-cover" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+                <text wx:if="{{item.hasVideo}}" class="magazine-media-mark">▶</text>
+                <text wx:if="{{item.mediaCount > 1}}" class="magazine-count-mark">{{item.mediaCount}} 张</text>
+                <text wx:if="{{item.products.length}}" class="magazine-product-mark" data-product-id="{{item.productId}}" catchtap="openLinkedProduct">商品</text>
+              </view>
+              <view class="magazine-card-copy"><text class="magazine-card-title">{{item.text || item.displayTitle}}</text><text wx:if="{{item.category}}" class="magazine-card-category">{{item.category}}</text></view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+</view>
+
+<view wx:if="{{commentPost}}" class="sheet-mask" catchtap="closeComments">
+  <view class="bottom-sheet" catchtap="stopTap">
+    <view class="sheet-head"><text>评论</text><text class="sheet-close" bindtap="closeComments">×</text></view>
+    <scroll-view class="comment-list" scroll-y="true" bindscrolltolower="loadMoreComments">
+      <view wx:if="{{commentsLoading}}" class="sheet-empty">加载中</view>
+      <view wx:elif="{{commentsError}}" class="sheet-empty" bindtap="retryComments">{{commentsError}} · 点击重试</view>
+      <view wx:elif="{{comments.length === 0}}" class="sheet-empty">还没有评论</view>
+      <view wx:for="{{comments}}" wx:key="id" class="comment-thread">
+        <view class="comment-row">
+          <view class="comment-avatar">{{item.authorInitial}}</view>
+          <view class="comment-content">
+            <text class="comment-author">{{item.authorName || 'RUDA 用户'}}</text>
+            <text class="comment-text">{{item.text}}</text>
+            <view class="comment-actions"><text data-id="{{item.id}}" catchtap="setReplyTarget">回复</text><text data-id="{{item.id}}" catchtap="reportComment">举报</text><text wx:if="{{item.mine}}" data-id="{{item.id}}" catchtap="deleteComment">删除</text></view>
+          </view>
+        </view>
+        <view wx:if="{{item.replies.length}}" class="comment-replies">
+          <view wx:for="{{item.replies}}" wx:for-item="reply" wx:key="id" class="comment-row comment-row-reply">
+            <view class="comment-avatar comment-avatar-sm">{{reply.authorInitial}}</view>
+            <view class="comment-content">
+              <text class="comment-author">{{reply.authorName}}</text>
+              <text class="comment-text">{{reply.text}}</text>
+              <view class="comment-actions"><text data-id="{{reply.id}}" catchtap="reportComment">举报</text><text wx:if="{{reply.mine}}" data-id="{{reply.id}}" catchtap="deleteComment">删除</text></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <view wx:if="{{replyTarget}}" class="comment-reply-bar"><text>回复 @{{replyTarget.displayName}}</text><text catchtap="cancelReply">取消</text></view>
+    <view class="comment-compose"><input value="{{commentDraft}}" maxlength="300" placeholder="{{replyTarget ? '回复 @' + replyTarget.displayName : '写下你的想法'}}" bindinput="onCommentInput" confirm-type="send" bindconfirm="submitComment" /><view class="send-button {{commentDraft ? 'send-ready' : ''}}" bindtap="submitComment">发送</view></view>
+  </view>
+</view>
+
+<view wx:if="{{composerOpen}}" class="creator-overlay-screen">
+  <view wx:if="{{composerStep === 'capture'}}" class="creator-capture-screen">
+    <view class="creator-topbar" style="padding-top: {{statusBarHeight}}px">
+      <text class="creator-cancel" bindtap="closeComposer">取消</text>
+      <text class="creator-top-title">创作作品</text>
+      <text class="creator-top-spacer"></text>
+    </view>
+    <view class="capture-content">
+      <text class="capture-eyebrow">RUDA FASHION</text>
+      <text class="capture-title">记录你的风格</text>
+      <text class="capture-subtitle">拍摄一段视频，或从相册挑选时尚灵感</text>
+      <text wx:if="{{draftRestoreWarning}}" class="capture-restore-warning">{{draftRestoreWarning}}</text>
+      <view class="capture-options">
+        <view class="capture-option capture-option-primary" data-type="video" data-source="camera" bindtap="onChoosePostMedia">
+          <text class="capture-option-icon">●</text><view><text class="capture-option-title">拍摄视频</text><text class="capture-option-hint">使用相机即时创作</text></view><text class="capture-option-arrow">›</text>
+        </view>
+        <view class="capture-option" data-type="video" data-source="album" bindtap="onChoosePostMedia">
+          <text class="capture-option-icon">▷</text><view><text class="capture-option-title">上传视频</text><text class="capture-option-hint">从相册选择一段视频</text></view><text class="capture-option-arrow">›</text>
+        </view>
+        <view class="capture-option" data-type="image" data-source="camera" bindtap="onChoosePostMedia">
+          <text class="capture-option-icon">◎</text><view><text class="capture-option-title">拍摄照片</text><text class="capture-option-hint">为图集添加一张新照片</text></view><text class="capture-option-arrow">›</text>
+        </view>
+        <view class="capture-option" data-type="image" data-source="album" bindtap="onChoosePostMedia">
+          <text class="capture-option-icon">▧</text><view><text class="capture-option-title">选择图片</text><text class="capture-option-hint">可多选，合成一条图集作品</text></view><text class="capture-option-arrow">›</text>
+        </view>
+      </view>
+      <text class="capture-footnote">视频和图片最多 8 个素材 · 发布内容将提交审核</text>
+      <view wx:if="{{serverDraftsSignedOut || serverDraftsLoading || serverDrafts.length || serverDraftsError}}" class="cloud-drafts">
+        <view class="cloud-drafts-head"><text>云端草稿</text><text wx:if="{{serverDraftsLoading}}" class="cloud-drafts-hint">同步中</text></view>
+        <view wx:if="{{serverDraftsSignedOut}}" class="cloud-drafts-empty">登录后可保存草稿，并在 Web 与小程序之间同步</view>
+        <view wx:elif="{{serverDraftsError}}" class="cloud-drafts-empty" bindtap="retryServerDrafts">{{serverDraftsError}}</view>
+        <view wx:elif="{{!serverDraftsLoading && !serverDrafts.length}}" class="cloud-drafts-empty">暂无云端草稿</view>
+        <view wx:for="{{serverDrafts}}" wx:key="id" class="cloud-draft-row">
+          <view class="cloud-draft-main" data-id="{{item.id}}" bindtap="restoreServerDraft">
+            <text class="cloud-draft-title">{{item.title || item.caption || '未命名草稿'}}</text>
+            <text class="cloud-draft-meta">{{item.mediaSummary}} · {{item.updatedLabel}}</text>
+          </view>
+          <text class="cloud-draft-delete" data-id="{{item.id}}" catchtap="deleteServerDraft">删除</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:elif="{{composerStep === 'preview'}}" class="creator-preview-screen">
+    <view class="creator-preview-topbar" style="padding-top: {{statusBarHeight}}px">
+      <text class="creator-back-button" bindtap="returnToCapture">‹</text>
+      <text class="creator-preview-heading">作品预览</text>
+      <text class="creator-preview-count">{{activeMediaIndex + 1}} / {{draftMedia.length}}</text>
+    </view>
+    <view class="creator-preview-stage">
+      <swiper wx:if="{{draftMedia.length > 1}}" class="creator-preview-carousel" current="{{activeMediaIndex}}" duration="180" circular="false" bindchange="onDraftMediaSwipe">
+        <swiper-item wx:for="{{draftMedia}}" wx:key="id" class="creator-preview-carousel-item">
+          <view wx:if="{{item.remote}}" class="creator-preview-remote">{{item.type === 'video' ? '云端视频已保存' : '云端图片已保存'}}</view>
+          <video wx:elif="{{item.type === 'video' && index === activeMediaIndex}}" id="fashion-composer-video" class="creator-preview-media" src="{{item.filePath}}" poster="{{item.posterPath}}" initial-time="{{item.trimStartSeconds}}" muted="{{item.muted}}" controls="true" object-fit="contain" bindtimeupdate="onComposerVideoTimeUpdate" />
+          <image wx:elif="{{item.type === 'image'}}" class="creator-preview-media" src="{{item.filePath}}" mode="aspectFit" />
+        </swiper-item>
+      </swiper>
+      <block wx:else>
+        <view wx:if="{{draftMedia[activeMediaIndex].remote}}" class="creator-preview-remote">{{draftMedia[activeMediaIndex].type === 'video' ? '云端视频已保存' : '云端图片已保存'}}</view>
+        <video wx:elif="{{draftMedia[activeMediaIndex].type === 'video'}}" id="fashion-composer-video" class="creator-preview-media" src="{{draftMedia[activeMediaIndex].filePath}}" poster="{{draftMedia[activeMediaIndex].posterPath}}" initial-time="{{draftMedia[activeMediaIndex].trimStartSeconds}}" muted="{{draftMedia[activeMediaIndex].muted}}" controls="true" object-fit="contain" bindtimeupdate="onComposerVideoTimeUpdate" />
+        <image wx:else class="creator-preview-media" src="{{draftMedia[activeMediaIndex].filePath}}" mode="aspectFit" />
+      </block>
+      <view class="creator-preview-gradient"></view>
+      <view wx:if="{{draftMedia[activeMediaIndex].type === 'video'}}" class="creator-preview-meta">{{draftMedia[activeMediaIndex].durationLabel}} · {{draftMedia[activeMediaIndex].sizeLabel}}</view>
+      <view wx:else class="creator-preview-meta">{{draftMedia[activeMediaIndex].sizeLabel}}</view>
+      <view class="creator-preview-caption">
+        <text class="creator-preview-author">RUDA · 我的作品</text>
+        <text wx:if="{{postText}}" class="creator-preview-description">{{postText}}</text>
+        <text wx:else class="creator-preview-placeholder">作品描述会显示在这里</text>
+        <view wx:if="{{postHashtags.length}}" class="creator-preview-tags"><text wx:for="{{postHashtags}}" wx:key="*this">#{{item}} </text></view>
+      </view>
+      <view wx:if="{{draftMedia[activeMediaIndex].type === 'video' && !draftMedia[activeMediaIndex].remote}}" class="creator-cover-control" data-index="{{activeMediaIndex}}" bindtap="chooseVideoPoster">视频封面 · {{draftMedia[activeMediaIndex].posterPath ? '更换' : '选择'}}</view>
+      <view wx:elif="{{draftMedia[activeMediaIndex].type === 'image' && !draftMedia[activeMediaIndex].remote}}" class="creator-cover-control" data-index="{{activeMediaIndex}}" bindtap="setPhotoCover">{{coverMediaIndex === activeMediaIndex ? '作品封面 ✓' : '设为作品封面'}}</view>
+    </view>
+    <view class="creator-preview-tools">
+      <scroll-view class="creator-media-strip" scroll-x="true" show-scrollbar="false">
+        <view wx:for="{{draftMedia}}" wx:key="id" class="creator-media-unit">
+          <view class="creator-media-thumb {{activeMediaIndex === index ? 'creator-media-thumb-active' : ''}}" data-index="{{index}}" bindtap="selectDraftMedia">
+            <view wx:if="{{item.remote}}" class="creator-media-thumb-remote">{{item.type === 'video' ? '视频' : '图片'}}</view>
+            <image wx:elif="{{item.type === 'image'}}" src="{{item.filePath}}" mode="aspectFill" />
+            <image wx:elif="{{item.posterPath}}" src="{{item.posterPath}}" mode="aspectFill" />
+            <text wx:else class="creator-video-thumb-fallback">▶</text>
+            <text wx:if="{{coverMediaIndex === index}}" class="creator-cover-mark">封面</text>
+          </view>
+          <view class="creator-thumb-actions"><text data-index="{{index}}" data-direction="-1" bindtap="moveDraftMedia">‹</text><text data-index="{{index}}" bindtap="removeDraftMedia">×</text><text data-index="{{index}}" data-direction="1" bindtap="moveDraftMedia">›</text></view>
+        </view>
+      </scroll-view>
+      <view wx:if="{{draftMedia[activeMediaIndex].type === 'video' && !draftMedia[activeMediaIndex].remote}}" class="creator-trim-editor">
+        <view class="creator-trim-heading"><text>视频剪辑</text><text>发布时应用裁剪和静音设置</text></view>
+        <view class="creator-trim-range"><text>开始 {{draftMedia[activeMediaIndex].trimStartSeconds}}s</text><slider min="0" max="{{draftMedia[activeMediaIndex].duration}}" step="1" value="{{draftMedia[activeMediaIndex].trimStartSeconds}}" data-index="{{activeMediaIndex}}" data-edge="start" bindchange="onVideoTrimChange" activeColor="#d7c39b" backgroundColor="#53534f" block-size="16" /></view>
+        <view class="creator-trim-range"><text>结束 {{draftMedia[activeMediaIndex].trimEndSeconds}}s</text><slider min="1" max="{{draftMedia[activeMediaIndex].duration}}" step="1" value="{{draftMedia[activeMediaIndex].trimEndSeconds}}" data-index="{{activeMediaIndex}}" data-edge="end" bindchange="onVideoTrimChange" activeColor="#d7c39b" backgroundColor="#53534f" block-size="16" /></view>
+        <view class="creator-trim-mute"><text>静音原视频</text><switch checked="{{draftMedia[activeMediaIndex].muted}}" color="#d7c39b" data-index="{{activeMediaIndex}}" bindchange="onVideoMuteChange" /></view>
+      </view>
+      <view class="creator-add-tools">
+        <view data-type="image" data-source="album" bindtap="onChoosePostMedia">＋ 添加图片</view>
+        <view data-type="video" data-source="album" bindtap="onChoosePostMedia">＋ 添加视频</view>
+      </view>
+      <text class="creator-next-hint">此步骤仅预览素材，不会开始上传</text>
+      <view class="creator-next-button {{draftSaving ? 'disabled' : ''}}" bindtap="continueToPostDetails">{{draftSaving ? '正在保存素材…' : '下一步：填写发布信息'}}</view>
+    </view>
+  </view>
+
+  <view wx:elif="{{composerStep === 'submitted'}}" class="creator-submitted-screen">
+    <view class="creator-submitted-topbar" style="padding-top: {{statusBarHeight}}px">
+      <text class="creator-submitted-close" bindtap="finishPublishing">×</text>
+      <text>发布结果</text>
+      <text class="creator-submitted-spacer"></text>
+    </view>
+    <view class="creator-submitted-content">
+      <view class="creator-submitted-preview">
+        <view wx:if="{{draftMedia[coverMediaIndex].remote}}" class="creator-submitted-media creator-preview-remote">云端素材已发布</view>
+        <video wx:elif="{{draftMedia[coverMediaIndex].type === 'video'}}" class="creator-submitted-media" src="{{draftMedia[coverMediaIndex].filePath}}" poster="{{draftMedia[coverMediaIndex].posterPath}}" controls="false" object-fit="cover" />
+        <image wx:else class="creator-submitted-media" src="{{draftMedia[coverMediaIndex].filePath}}" mode="aspectFill" />
+        <view class="creator-submitted-shade"></view>
+        <text class="creator-submitted-title">{{publicationResult.title || 'RUDA 时尚作品'}}</text>
+      </view>
+      <view class="creator-submitted-mark">{{publicationResult.status === 'approved' ? '✓' : '…'}}</view>
+      <text class="creator-submitted-heading">{{publicationResult.status === 'approved' ? '作品已发布' : (publicationResult.status === 'unpublished' ? '作品暂未公开' : '作品已提交审核')}}</text>
+      <text class="creator-submitted-copy">{{publicationResult.status === 'approved' ? '你的作品已进入时尚内容流。' : (publicationResult.status === 'unpublished' ? '作品未处于公开状态，请查看审核或管理结果。' : '审核通过后，作品将进入公开时尚内容流。')}}</text>
+      <text wx:if="{{publicationResult.status === 'pending'}}" class="creator-submitted-note">审核期间，你可以先返回继续浏览时尚内容。</text>
+      <view class="creator-submitted-button" bindtap="finishPublishing">返回时尚内容流</view>
+    </view>
+  </view>
+
+  <view wx:else class="creator-details-screen">
+    <view class="creator-details-topbar" style="padding-top: {{statusBarHeight}}px">
+      <text class="creator-back-button" bindtap="returnToMediaSelection">‹</text>
+      <text class="creator-preview-heading">发布作品</text>
+      <text class="creator-preview-count" bindtap="returnToMediaSelection">预览</text>
+    </view>
+    <scroll-view class="creator-details-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+      <view wx:if="{{draftRestoreWarning}}" class="draft-restore-warning">{{draftRestoreWarning}}</view>
+      <view class="creator-final-preview" bindtap="returnToMediaSelection">
+        <view wx:if="{{draftMedia[activeMediaIndex].remote}}" class="creator-final-media creator-preview-remote">云端素材</view>
+        <video wx:elif="{{draftMedia[activeMediaIndex].type === 'video'}}" class="creator-final-media" src="{{draftMedia[activeMediaIndex].filePath}}" poster="{{draftMedia[activeMediaIndex].posterPath}}" autoplay="true" loop="true" muted="true" controls="true" object-fit="cover" />
+        <image wx:else class="creator-final-media" src="{{draftMedia[activeMediaIndex].filePath}}" mode="aspectFill" />
+        <view class="creator-final-shade"></view>
+        <view class="creator-final-copy"><text>RUDA · 我的作品</text><text>{{postText || '作品描述预览'}}</text><view wx:if="{{postHashtags.length}}" class="creator-final-tags"><text wx:for="{{postHashtags}}" wx:key="*this">#{{item}} </text></view></view>
+        <text class="creator-final-edit">调整素材 ›</text>
+      </view>
+      <view class="creator-caption-label">写下作品灵感</view>
+      <view class="input-wrap"><input class="composer-input" value="{{postTitle}}" maxlength="120" placeholder="作品标题（可选）" data-field="title" bindinput="onComposerInput" /></view>
+      <view class="input-wrap text-input-wrap"><textarea class="composer-textarea creator-caption-input" value="{{postText}}" maxlength="2000" placeholder="描述这套造型、灵感或趋势观察…" data-field="text" bindinput="onComposerInput" /></view>
+      <view class="hashtag-editor">
+        <view class="hashtag-input-row"><input class="hashtag-input" value="{{hashtagDraft}}" maxlength="30" placeholder="添加话题标签" data-field="hashtags" bindinput="onComposerInput" confirm-type="done" bindconfirm="addPostHashtag" /><view class="hashtag-add" bindtap="addPostHashtag">添加</view></view>
+        <view wx:if="{{postHashtags.length}}" class="hashtag-row"><view wx:for="{{postHashtags}}" wx:key="*this" class="hashtag-chip" data-tag="{{item}}" bindtap="removePostHashtag">#{{item}} ×</view></view>
+      </view>
+      <view class="picker-row">
+        <picker mode="selector" range="{{postCategories}}" value="{{postCategoryIndex}}" bindchange="onPostCategoryChange"><view class="form-picker">{{postCategories[postCategoryIndex]}}　⌄</view></picker>
+        <picker mode="selector" range="{{cities}}" value="{{postCityIndex}}" bindchange="onPostCityChange"><view class="form-picker">{{cities[postCityIndex]}}　⌄</view></picker>
+      </view>
+      <view class="picker-row">
+        <picker mode="selector" range="{{seasonOptions}}" value="{{postSeasonIndex}}" bindchange="onPostSeasonChange"><view class="form-picker">季节：{{seasonOptions[postSeasonIndex]}}　⌄</view></picker>
+      </view>
+      <view class="post-visibility-row">
+        <view><text>谁可以看</text><text>{{postVisibilityOptions[postVisibilityIndex]}}</text></view>
+        <picker mode="selector" range="{{postVisibilityOptions}}" value="{{postVisibilityIndex}}" bindchange="onPostVisibilityChange"><view>更改　⌄</view></picker>
+      </view>
+      <view class="post-comments-row"><view><text>允许评论</text><text>关闭后其他人无法查看或发送评论</text></view><switch checked="{{commentsEnabled}}" color="#24231f" bindchange="onCommentsEnabledChange" /></view>
+      <view class="product-link-section">
+        <view class="product-link-heading"><text>关联商品</text><text>仅展示商城在售商品</text></view>
+        <view wx:if="{{selectedProduct}}" class="selected-product">
+          <image wx:if="{{selectedProduct.coverUrl}}" src="{{selectedProduct.coverUrl}}" mode="aspectFill" />
+          <view wx:else class="selected-product-placeholder">RUDA</view>
+          <view class="selected-product-copy"><text>{{selectedProduct.displayName || selectedProduct.name_zh || selectedProduct.name}}</text><text>{{selectedProduct.brand || selectedProduct.styleNo}}</text></view>
+          <text class="selected-product-remove" bindtap="removeFashionProduct">移除</text>
+        </view>
+        <view wx:else class="product-picker-trigger" bindtap="openProductPicker"><text>＋</text><text>从商城选择商品</text><text>›</text></view>
+      </view>
+      <checkbox-group bindchange="onRightsChange"><label class="rights-row"><checkbox value="confirmed" color="#171717" checked="{{rightsConfirmed}}" /><text>我拥有这些素材的使用权或已获得授权</text></label></checkbox-group>
+      <view wx:if="{{postSubmitting}}" class="upload-progress">
+        <view class="progress-label"><text>{{uploadCurrentLabel}}</text><text>{{uploadProgress}}%</text></view>
+        <progress percent="{{uploadProgress}}" stroke-width="4" activeColor="#171717" backgroundColor="#e8e6e2" />
+      </view>
+      <view wx:if="{{uploadError}}" class="upload-error"><text>{{uploadError}}</text><text>已保留已上传素材，可直接重试。</text></view>
+      <view class="creator-details-bottom-space"></view>
+    </scroll-view>
+    <view class="creator-publish-footer">
+      <view class="creator-publish-state">{{draftSaving ? '正在保存草稿到云端…' : (postSubmitting ? uploadCurrentLabel : (uploadError ? '上传未完成，已保留素材，可重试' : '点击发布后开始上传并提交审核'))}}</view>
+      <view class="creator-publish-actions">
+        <view class="creator-save-draft {{postSubmitting || draftSaving ? 'disabled' : ''}}" bindtap="saveComposerDraft">{{draftSaving ? '保存中' : '保存到云端'}}</view>
+        <view class="creator-publish-button {{postSubmitting || draftSaving || !rightsConfirmed ? 'disabled' : ''}}" bindtap="submitPost">{{postSubmitting ? '正在上传 ' + uploadProgress + '%' : (uploadError ? '重试上传并发布' : (draftMedia.length > 1 ? '上传并发布图集' : (draftMedia[0].type === 'video' ? '上传并发布视频' : '上传并发布图片')))}}</view>
+      </view>
+    </view>
+  </view>
+  <view wx:if="{{productPickerOpen}}" class="product-picker-mask" catchtap="closeProductPicker">
+    <view class="product-picker-panel" catchtap="stopTap">
+      <view class="product-picker-header"><text>选择商品</text><text bindtap="closeProductPicker">关闭</text></view>
+      <view class="product-search-box">
+        <input value="{{productSearch}}" maxlength="80" placeholder="搜索商品名称或品牌" confirm-type="search" bindinput="onProductSearchInput" bindconfirm="searchFashionProducts" />
+        <text wx:if="{{productSearch}}" bindtap="clearProductSearch">×</text>
+      </view>
+      <view wx:if="{{productSearch.length < 2}}" class="product-picker-hint">输入至少 2 个字符，搜索商城在售商品</view>
+      <view wx:elif="{{productSearchLoading}}" class="product-picker-hint">正在搜索商品…</view>
+      <view wx:elif="{{productSearchError}}" class="product-picker-state"><text>{{productSearchError}}</text><text bindtap="retryFashionProductSearch">重试</text></view>
+      <scroll-view wx:else class="product-picker-results" scroll-y="true" enhanced="true" show-scrollbar="false">
+        <view wx:for="{{productResults}}" wx:key="id" class="product-result-row" data-id="{{item.id}}" bindtap="selectFashionProduct">
+          <image wx:if="{{item.coverUrl}}" src="{{item.coverUrl}}" mode="aspectFill" />
+          <view wx:else class="product-result-placeholder">RUDA</view>
+          <view class="product-result-copy"><text>{{item.displayName}}</text><text>{{item.brand || item.styleNo}}</text></view>
+          <text wx:if="{{item.displayPrice}}" class="product-result-price">{{item.displayPrice}}</text>
+        </view>
+        <view wx:if="{{!productResults.length}}" class="product-picker-hint">没有找到在售商品</view>
+      </scroll-view>
+    </view>
+  </view>
+</view>
+
+<view wx:else class="fashion-disabled" style="padding-top: {{statusBarHeight + 96}}px">
+  <view class="fashion-disabled-inner">
+    <text class="fashion-disabled-title">时尚版块暂未开放</text>
+    <text class="fashion-disabled-copy">当前版本未开启时尚内容，返回首页继续浏览商家与商城。</text>
+    <view class="retry-button" bindtap="goHomeFromDisabled">返回首页</view>
+  </view>
+
+  <view wx:if="{{notificationsOpen}}" class="fashion-notification-mask" catchtap="closeFashionNotifications">
+    <view class="fashion-notification-sheet" catchtap="noop">
+      <view class="fashion-notification-header">
+        <text class="fashion-notification-title">消息</text>
+        <text class="fashion-notification-close" bindtap="closeFashionNotifications">✕</text>
+      </view>
+      <scroll-view class="fashion-notification-list" scroll-y="true">
+        <view wx:if="{{notificationsLoading}}" class="fashion-notification-empty">正在加载…</view>
+        <view wx:elif="{{!notifications.length}}" class="fashion-notification-empty">还没有新消息。作品获得点赞、评论、回复或关注时会显示在这里。</view>
+        <block wx:else>
+          <view wx:for="{{notifications}}" wx:key="id" class="fashion-notification-item {{item.read ? '' : 'fashion-notification-unread'}}" data-index="{{index}}" bindtap="openFashionNotification">
+            <image wx:if="{{item.postImage}}" class="fashion-notification-thumb" src="{{item.postImage}}" mode="aspectFill" />
+            <view class="fashion-notification-body">
+              <text class="fashion-notification-actor">{{item.actorName}}</text>
+              <text class="fashion-notification-text">{{item.type === 'like' ? '赞了你的作品' : item.type === 'follow' ? '关注了你' : item.type === 'reply' ? '回复了你的评论' : item.type === 'comment' ? '评论了你的作品' : '有新的互动'}}</text>
+              <text wx:if="{{item.preview && item.type !== 'like' && item.type !== 'follow'}}" class="fashion-notification-preview">{{item.preview}}</text>
+            </view>
+            <text class="fashion-notification-delete" data-index="{{index}}" catchtap="removeFashionNotification">✕</text>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view wx:if="{{analyticsOpen}}" class="fashion-notification-mask" catchtap="closeFashionAnalytics">
+    <view class="fashion-notification-sheet" catchtap="noop">
+      <view class="fashion-notification-header">
+        <text class="fashion-notification-title">作品数据</text>
+        <text class="fashion-notification-close" bindtap="closeFashionAnalytics">✕</text>
+      </view>
+      <scroll-view class="fashion-notification-list" scroll-y="true">
+        <view wx:if="{{analyticsLoading}}" class="fashion-notification-empty">正在加载…</view>
+        <view wx:elif="{{analyticsError}}" class="fashion-notification-empty" bindtap="retryFashionAnalytics">{{analyticsError}}</view>
+        <block wx:else>
+          <view wx:if="{{analyticsTotals}}" class="analytics-grid">
+            <view class="analytics-cell"><text class="analytics-value">{{analyticsTotals.views || 0}}</text><text class="analytics-label">播放</text></view>
+            <view class="analytics-cell"><text class="analytics-value">{{analyticsTotals.completionRate || 0}}%</text><text class="analytics-label">完播率</text></view>
+            <view class="analytics-cell"><text class="analytics-value">{{analyticsTotals.likes || 0}}</text><text class="analytics-label">点赞</text></view>
+            <view class="analytics-cell"><text class="analytics-value">{{analyticsTotals.comments || 0}}</text><text class="analytics-label">评论</text></view>
+            <view class="analytics-cell"><text class="analytics-value">{{analyticsTotals.saves || 0}}</text><text class="analytics-label">收藏</text></view>
+            <view class="analytics-cell"><text class="analytics-value">{{analyticsTotals.productClicks || 0}}</text><text class="analytics-label">商品点击</text></view>
+          </view>
+          <view wx:if="{{!analyticsPosts.length}}" class="fashion-notification-empty">还没有作品。发布后可在这里查看真实播放与互动数据。</view>
+          <view wx:for="{{analyticsPosts}}" wx:key="id" class="analytics-row">
+            <image wx:if="{{item.image}}" class="analytics-thumb" src="{{item.image}}" mode="aspectFill" />
+            <view class="analytics-body">
+              <text class="analytics-title">{{item.title}}</text>
+              <text class="analytics-status">{{item.statusLabel}}</text>
+              <view class="analytics-metrics">
+                <text>播放 {{item.views}}</text>
+                <text>完播 {{item.completions}}</text>
+                <text>平均 {{item.avgWatchedLabel}}</text>
+                <text>赞 {{item.likes}}</text>
+                <text>评论 {{item.comments}}</text>
+                <text>收藏 {{item.saves}}</text>
+                <text>商品点击 {{item.productClicks}}</text>
+              </view>
+            </view>
+            <text class="analytics-delete" data-id="{{item.id}}" catchtap="deleteAnalyticsPost">删除</text>
+          </view>
+        </block>
+      </scroll-view>
+    </view>
+  </view>
+</view>

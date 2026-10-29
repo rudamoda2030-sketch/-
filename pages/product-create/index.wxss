@@ -1,0 +1,75 @@
+.create-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20rpx;
+}
+
+.image-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 100%;
+  height: 360rpx;
+  margin: 0 0 20rpx;
+  padding: 0;
+  border: 1rpx dashed #cfc8bd;
+  border-radius: 8rpx;
+  background: #f7f6f3;
+}
+
+.image-placeholder {
+  color: #8a8580;
+  font-size: 24rpx;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.create-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18rpx;
+  color: #71695f;
+  font-size: 22rpx;
+}
+
+.create-field input,
+.picker-value {
+  margin-top: 8rpx;
+  padding: 16rpx;
+  border: 1rpx solid #e5e0d9;
+  border-radius: 6rpx;
+  color: #1d1b19;
+  font-size: 24rpx;
+}
+
+.sku-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin: 10rpx 0 18rpx;
+}
+
+.sku-heading .muted {
+  font-size: 20rpx;
+}
+
+.create-note {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.create-error {
+  margin-top: 16rpx;
+  color: #a3342b;
+  font-size: 22rpx;
+}
+
+.create-submit {
+  margin: 22rpx 0 40rpx;
+}

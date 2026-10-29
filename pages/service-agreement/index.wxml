@@ -1,0 +1,34 @@
+<site-header />
+<view class="screen legal-page">
+  <text class="eyebrow">RUDA TERMS</text>
+  <text class="page-title">RUDA 买家小程序用户服务协议</text>
+  <text class="legal-updated">更新日期：2026年10月22日</text>
+  <text class="legal-intro">本协议适用于你通过 RUDA 买家小程序使用账号登录、浏览商品、联系商家、购物下单及相关服务。使用前请仔细阅读。</text>
+
+  <view class="legal-section">
+    <text class="legal-heading">一、服务主体与账号</text>
+    <text class="legal-copy">服务由 RUDA ITALIA S.R.L. 提供。你可按页面要求使用邮箱或手机号及密码登录；买家账号应真实、有效并由你本人或经授权人员使用。请妥善保管登录凭证，不得冒用他人身份或将账号用于违法活动。</text>
+  </view>
+
+  <view class="legal-section">
+    <text class="legal-heading">二、购物与订单</text>
+    <text class="legal-copy">商品信息、库存、价格、折扣、起订量和配送条件可能变化，最终以服务端核验及订单确认信息为准。提交订单不代表款项已收取或订单已被商家接受；付款、配送、取消、退换货及售后安排以订单页面和 RUDA/商家后续确认的信息为准。请提供准确的配送地址。</text>
+  </view>
+
+  <view class="legal-section">
+    <text class="legal-heading">三、信息和图片</text>
+    <text class="legal-copy">你应确保提交的账号、配送资料、商品图片及其他内容真实、准确，并确保拥有必要的使用和授权权利。RUDA 按《RUDA 买家小程序隐私政策》处理登录账号、微信登录标识、配送地址、订单信息及你主动选择的图片。虚拟试衣图片须由你单独确认后提交处理。</text>
+  </view>
+
+  <view class="legal-section">
+    <text class="legal-heading">四、服务使用规则</text>
+    <text class="legal-copy">不得利用本服务从事欺诈、违法交易、侵害他人隐私或知识产权、干扰系统运行或规避访问控制等行为。因维护、升级、网络故障或第三方服务原因，部分功能可能暂时不可用；RUDA 将在可行范围内维护和恢复服务。</text>
+  </view>
+
+  <view class="legal-section">
+    <text class="legal-heading">五、协议更新与联系</text>
+    <text class="legal-copy">RUDA 可因法律要求或服务变化更新本协议，并通过小程序或网站公布。数据控制者及服务主体为 RUDA ITALIA S.R.L.，地址：Via Piemonte 24, 59100 Prato, Italia；邮箱：rdmodasrl@gmail.com。隐私请求也可通过小程序「帮助与反馈」提交。</text>
+  </view>
+
+  <navigator class="legal-document-link" url="/pages/privacy/index">查看《RUDA 买家小程序隐私政策》</navigator>
+</view>

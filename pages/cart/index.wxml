@@ -1,0 +1,33 @@
+<site-header />
+<view class="screen cart-page">
+  <text class="eyebrow">YOUR SELECTION</text>
+  <text class="page-title">购物车</text>
+  <view wx:if="{{!items.length}}" class="empty-state">
+    <text class="empty-title">购物车还是空的</text>
+    <text class="muted">去商城挑选喜欢的商品。</text>
+    <button class="secondary-button empty-action" bindtap="browseMarket">浏览商城</button>
+  </view>
+  <block wx:else>
+    <view class="cart-item" wx:for="{{items}}" wx:key="cartKey">
+      <image wx:if="{{item.imageUrl}}" class="cart-image" src="{{item.imageUrl}}" mode="aspectFill" />
+      <view class="cart-info">
+        <text class="product-brand">{{item.merchantName || item.brand}}</text>
+        <text class="product-name">{{item.productName}}</text>
+        <text class="muted cart-sku">{{item.color || '—'}} / {{item.size || '—'}} · {{item.sku}}</text>
+        <text class="product-price">{{item.displayLineTotal}}</text>
+        <view class="quantity-controls">
+          <button data-id="{{item.productId}}" data-sku="{{item.sku}}" data-delta="-1" bindtap="changeQuantity">−</button>
+          <text>{{item.quantity}}</text>
+          <button data-id="{{item.productId}}" data-sku="{{item.sku}}" data-delta="1" bindtap="changeQuantity">+</button>
+          <text class="remove-item" data-id="{{item.productId}}" data-sku="{{item.sku}}" bindtap="removeItem">移除</text>
+        </view>
+      </view>
+    </view>
+    <view class="checkout-summary">
+      <text>共 {{totalQty}} 件 · 商品金额预估</text>
+      <text class="summary-total">{{displayEstimatedTotal}}</text>
+      <text class="muted summary-note">最终价格、起订量、库存和运费由服务端下单时核验。</text>
+      <button class="primary-button checkout-button" bindtap="checkout">填写配送信息并下单</button>
+    </view>
+  </block>
+</view>

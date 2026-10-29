@@ -1,0 +1,171 @@
+<site-header />
+<view class="product-page">
+  <view wx:if="{{loading}}" class="empty-state product-empty">
+    <text class="empty-title">正在加载商品</text>
+    <text class="muted">请稍候。</text>
+  </view>
+  <view wx:elif="{{error}}" class="empty-state product-empty">
+    <text class="empty-title">商品暂时无法加载</text>
+    <text class="muted">{{error}}</text>
+  </view>
+  <block wx:elif="{{product}}">
+    <view class="product-toolbar">
+      <button class="toolbar-back" bindtap="goBack">‹ <text>返回采购大厅</text></button>
+      <button class="toolbar-share" open-type="share" aria-label="分享商品">分享</button>
+    </view>
+
+    <view class="product-gallery-wrap">
+      <swiper
+        wx:if="{{media.length}}"
+        class="product-gallery"
+        current="{{activeImageIndex}}"
+        circular="{{media.length > 1}}"
+        duration="320"
+        bindchange="onGalleryChange"
+      >
+        <swiper-item wx:for="{{media}}" wx:key="id">
+          <video
+            wx:if="{{item.type === 'video'}}"
+            class="gallery-media"
+            src="{{item.url}}"
+            poster="{{item.poster}}"
+            controls
+            object-fit="contain"
+          />
+          <image
+            wx:else
+            class="gallery-media"
+            src="{{item.url}}"
+            mode="aspectFit"
+            bindtap="previewGallery"
+          />
+        </swiper-item>
+      </swiper>
+      <view wx:if="{{media.length > 1}}" class="gallery-count">{{activeImageIndex + 1}} / {{media.length}}</view>
+    </view>
+
+    <scroll-view wx:if="{{media.length > 1}}" class="media-thumbnails" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="thumbnail-row">
+        <view
+          wx:for="{{media}}"
+          wx:key="id"
+          class="thumbnail {{activeImageIndex === index ? 'thumbnail-active' : ''}}"
+          data-index="{{index}}"
+          bindtap="selectMedia"
+        >
+          <video wx:if="{{item.type === 'video'}}" src="{{item.url}}" muted class="thumbnail-image" />
+          <image wx:else src="{{item.url}}" mode="aspectFill" class="thumbnail-image" />
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="product-content">
+      <view class="product-summary">
+        <text class="product-name">{{product.name_zh || product.name}}</text>
+        <text class="product-meta">款号 {{product.styleNo}}</text>
+        <view class="price-row">
+          <text class="product-price">{{displayWholesalePrice}}</text>
+          <text class="price-unit">/ 件</text>
+        </view>
+        <view class="order-rules">
+          <text>起订 {{product.moq || 1}} 件</text>
+        </view>
+      </view>
+
+      <view class="matrix-section">
+        <view class="section-heading">
+          <text class="section-title">颜色与尺码</text>
+          <text class="section-hint">商家审核供货</text>
+        </view>
+        <view class="color-options">
+          <view
+            wx:for="{{colorOptions}}"
+            wx:key="color"
+            class="color-option {{item.selected ? 'color-option-selected' : ''}}"
+            data-color="{{item.color}}"
+            bindtap="toggleColor"
+          >
+            <view class="color-swatch" style="background-color: {{item.colorCode}}"></view>
+            <text>{{item.colorLabel}}</text>
+          </view>
+        </view>
+        <view class="sku-color-list">
+          <view wx:for="{{matrixRows}}" wx:key="color" class="sku-color-card">
+            <view class="sku-color-heading" data-color="{{item.color}}" bindtap="toggleColorPanel">
+              <view class="color-swatch" style="background-color: {{item.colorCode}}"></view>
+              <text>{{item.colorLabel}}</text>
+              <text wx:if="{{item.quantity}}" class="sku-color-total">已选 {{item.quantity}} 件</text>
+              <text wx:else class="sku-color-total">库存 {{item.stock}} 件</text>
+              <text class="sku-color-chevron">{{expandedColor === item.color ? '⌄' : '›'}}</text>
+            </view>
+            <view wx:if="{{expandedColor === item.color}}" class="sku-cell-list">
+              <view
+                wx:for="{{item.cells}}"
+                wx:for-item="cell"
+                wx:key="key"
+                class="sku-quantity-cell {{cell.quantity ? 'sku-quantity-cell-selected' : ''}}"
+              >
+                <view class="sku-size-info">
+                  <text class="sku-size-label">{{cell.size}}</text>
+                  <text wx:if="{{cell.available}}" class="matrix-stock">现货 {{cell.stock}} 件</text>
+                  <text wx:else class="matrix-unavailable">不可订购</text>
+                </view>
+                <input
+                  wx:if="{{cell.available}}"
+                  type="number"
+                  value="{{cell.quantity}}"
+                  placeholder="0"
+                  placeholder-class="matrix-placeholder"
+                  data-sku="{{cell.sku}}"
+                  bindinput="onMatrixQuantityInput"
+                  cursor-spacing="100"
+                />
+                <text wx:else class="sku-unavailable-value">—</text>
+                <text wx:if="{{cell.backorderAllowed && cell.quantity > cell.stock}}" class="backorder-quantity">订货 {{cell.quantity - cell.stock}} 件</text>
+              </view>
+            </view>
+          </view>
+          <view wx:if="{{!matrixRows.length}}" class="sku-empty">请先选择颜色</view>
+        </view>
+      </view>
+
+      <view class="product-details">
+        <view class="product-details-toggle" bindtap="toggleProductDetails">
+          <text>商品详情</text>
+          <text>{{showDetails ? '−' : '+'}}</text>
+        </view>
+        <view wx:if="{{showDetails}}" class="product-details-content">
+          <text>{{product.description_zh || product.description || '暂无详细说明'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="purchase-bar">
+      <view class="purchase-total">
+        <view class="purchase-summary-copy">
+          <text class="purchase-selection">{{selectedSkuSummary || '请选择颜色和尺码'}}</text>
+          <text class="purchase-count">总件数 {{selectedQuantity}}</text>
+        </view>
+        <text class="purchase-amount">{{totalAmount}}</text>
+      </view>
+      <view class="purchase-actions">
+        <button class="utility-action" bindtap="openCustomerService">
+          <text class="utility-icon">🎧</text>
+          <text>客服</text>
+        </button>
+        <button class="utility-action cart-action" bindtap="openCart">
+          <view class="cart-icon-wrap">
+            <text class="utility-icon">🛒</text>
+            <text wx:if="{{cartCount > 0}}" class="cart-badge">{{cartCount > 99 ? '99+' : cartCount}}件</text>
+          </view>
+          <text>购物车</text>
+        </button>
+        <button
+          class="purchase-button"
+          disabled="{{selectedQuantity < (product.moq || 1)}}"
+          bindtap="orderNow"
+        >提交订单</button>
+      </view>
+    </view>
+  </block>
+</view>

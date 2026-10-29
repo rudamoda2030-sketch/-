@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "公共商城",
+  "enablePullDownRefresh": true,
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "site-header": "/components/site-header/index"
+  }
+}

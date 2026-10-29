@@ -1,0 +1,77 @@
+<view class="page">
+  <view class="masthead" style="height: {{navBarHeight}}px; padding-top: {{statusBarHeight}}px;">
+    <view class="menu-button" aria-label="打开个人中心与设置" bindtap="openSettings">
+      <view></view>
+      <view></view>
+      <view></view>
+    </view>
+    <view class="brand">
+      <view class="brand-name">RUDA<text class="brand-dot">.</text></view>
+      <text class="brand-caption">FASHION</text>
+    </view>
+  </view>
+
+  <view class="feed">
+    <block wx:for="{{feedItems}}" wx:key="key">
+      <view wx:if="{{item.type === 'demo-products'}}" class="demo-section">
+        <view class="demo-section-heading">
+          <view>
+            <text class="demo-section-title">公开演示商品</text>
+            <text class="demo-section-store">{{item.merchantName}}</text>
+          </view>
+          <text class="demo-section-count">{{item.products.length}} 件</text>
+        </view>
+        <view class="demo-product-grid">
+          <view
+            wx:for="{{item.products}}"
+            wx:for-item="product"
+            wx:key="id"
+            class="demo-product-card"
+            data-id="{{product.id}}"
+            bindtap="openProduct"
+          >
+            <image class="demo-product-image" src="{{product.images[0]}}" mode="aspectFill" />
+            <text class="demo-product-name">{{product.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view wx:elif="{{item.type === 'products'}}" class="product-block product-block--{{item.layout}}">
+        <view
+          wx:for="{{item.products}}"
+          wx:for-item="product"
+          wx:key="id"
+          class="product-card {{product.isFeature ? 'product-card--feature' : ''}}"
+          data-id="{{product.id}}"
+          bindtap="openProduct"
+        >
+          <image class="product-image" src="{{product.images[0]}}" mode="aspectFill" lazy-load />
+          <view wx:if="{{product.status === 'clearance'}}" class="discount-mark" aria-label="Discount">%</view>
+        </view>
+      </view>
+
+      <view wx:elif="{{item.type === 'video'}}" class="fashion-video {{item.isHero ? 'fashion-video--hero' : ''}}">
+        <video
+          src="{{item.videoUrl}}"
+          poster="{{item.poster}}"
+          autoplay
+          muted
+          loop
+          show-center-play-btn="{{false}}"
+          show-play-btn="{{false}}"
+          enable-progress-gesture="{{false}}"
+          object-fit="cover"
+        />
+      </view>
+
+      <view
+        wx:elif="{{item.type === 'merchant'}}"
+        class="merchant-image"
+        data-slug="{{item.storeSlug}}"
+        bindtap="openStore"
+      >
+        <image src="{{item.image}}" mode="aspectFill" lazy-load />
+      </view>
+    </block>
+  </view>
+</view>

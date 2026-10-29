@@ -1,0 +1,20 @@
+<site-header />
+<view class="screen product-edit-page">
+  <text class="eyebrow">MERCHANT PRODUCT</text>
+  <text class="page-title">编辑商品</text>
+  <view wx:if="{{loading}}" class="empty-state"><text class="muted">正在加载商品资料…</text></view>
+  <view wx:elif="{{!loaded}}" class="empty-state"><text class="muted">{{error || '商品资料不可用。'}}</text></view>
+  <view wx:else class="surface edit-form">
+    <label class="edit-field"><text>商品名称</text><input data-field="name" value="{{name}}" maxlength="200" bindinput="onInput" /></label>
+    <label class="edit-field"><text>款号</text><input data-field="styleNo" value="{{styleNo}}" maxlength="100" bindinput="onInput" /></label>
+    <label class="edit-field"><text>分类</text><input data-field="category" value="{{category}}" maxlength="80" bindinput="onInput" /></label>
+    <label class="edit-field"><text>批发价（EUR）</text><input data-field="wholesalePrice" type="digit" value="{{wholesalePrice}}" bindinput="onInput" /></label>
+    <label class="edit-field"><text>批量价（可选，EUR）</text><input data-field="wholesalePrice100" type="digit" value="{{wholesalePrice100}}" bindinput="onInput" /></label>
+    <label class="edit-field"><text>建议零售价（EUR）</text><input data-field="rrpPrice" type="digit" value="{{rrpPrice}}" bindinput="onInput" /></label>
+    <label class="edit-field"><text>起订量</text><input data-field="moq" type="number" value="{{moq}}" bindinput="onInput" /></label>
+    <label class="edit-field"><text>商品描述</text><textarea data-field="description" maxlength="3000" value="{{description}}" bindinput="onInput" /></label>
+  </view>
+  <view wx:if="{{error && productId}}" class="edit-error">{{error}}</view>
+  <text class="muted edit-note">保存由 RUDA 服务端执行权限及商品数据校验。图片、规格和库存请在 RUDA 商家后台维护。</text>
+  <button class="primary-button edit-save" loading="{{saving}}" disabled="{{loading || saving}}" bindtap="save">{{saving ? '正在保存…' : '保存商品'}}</button>
+</view>

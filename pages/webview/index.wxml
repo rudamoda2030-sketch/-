@@ -1,0 +1,7 @@
+<site-header />
+<web-view wx:if="{{url}}" src="{{url}}" binderror="onWebViewError" />
+<view wx:if="{{loadError}}" class="webview-error">
+  <text>官网无法在小程序中打开。</text>
+  <text>请确认该域名已添加到微信小程序业务域名，或复制链接在浏览器打开。</text>
+  <button bindtap="copyWebsite">复制官网链接</button>
+</view>

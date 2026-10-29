@@ -1,0 +1,119 @@
+<site-header />
+<view class="screen merchant-screen">
+  <text class="page-title">商家</text>
+  <text class="muted intro">浏览品牌资料、联系商家并查看独立店铺。</text>
+  <input
+    class="merchant-search"
+    value="{{keyword}}"
+    placeholder="搜索商家、品类或城市"
+    confirm-type="search"
+    bindinput="searchMerchants"
+    bindconfirm="submitStoreSearch"
+  />
+  <view class="find-store-entry" hover-class="find-store-entry-active" bindtap="openFindStore">
+    <text>输入商家代码找店</text>
+    <text class="find-store-entry-arrow">›</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty-state">
+    <text class="empty-title">正在加载品牌</text>
+    <text class="muted">请稍候。</text>
+  </view>
+  <view wx:elif="{{error}}" class="empty-state">
+    <text class="empty-title">品牌暂时无法加载</text>
+    <text class="muted">{{error}}</text>
+  </view>
+  <view wx:elif="{{merchants.length === 0}}" class="empty-state">
+    <text class="empty-title">{{keyword ? '没有找到相关商家' : '暂无公开商家'}}</text>
+    <text class="muted">{{keyword ? '试试其他名称、品类或城市。' : '当前没有可公开展示的商家。'}}</text>
+  </view>
+  <view wx:else class="merchant-list">
+    <view
+      wx:for="{{merchants}}"
+      wx:key="id"
+      class="merchant-card"
+    >
+      <view class="merchant-main">
+        <image
+          wx:if="{{item.imageUrl}}"
+          class="merchant-photo"
+          src="{{item.imageUrl}}"
+          mode="{{item.logo && !item.showroomImage && !item.banner ? 'aspectFit' : 'aspectFill'}}"
+          data-slug="{{item.storeSlug}}"
+          data-id="{{item.id}}"
+          bindtap="openStore"
+        />
+        <view
+          wx:else
+          class="merchant-photo merchant-photo-fallback"
+          data-slug="{{item.storeSlug}}"
+          data-id="{{item.id}}"
+          bindtap="openStore"
+        >
+          <text>{{item.name}}</text>
+        </view>
+        <view class="merchant-info">
+          <text
+            class="merchant-name"
+            data-slug="{{item.storeSlug}}"
+            data-id="{{item.id}}"
+            bindtap="openStore"
+          >{{item.name}}</text>
+          <text class="merchant-category">{{item.category}}</text>
+          <text class="merchant-description">{{item.description}}</text>
+          <view class="merchant-contact-row">
+            <text class="merchant-contact">{{item.address || '商家未提供'}}</text>
+          </view>
+          <view class="merchant-contact-row">
+            <text wx:if="{{item.phone}}" class="merchant-contact">{{item.phone}}</text>
+            <text wx:else class="merchant-contact unavailable">商家未提供</text>
+          </view>
+          <view class="merchant-website-row">
+            <text class="contact-label">官方网站</text>
+            <view wx:if="{{item.websiteUrl}}" class="website-link" data-url="{{item.websiteUrl}}" data-name="{{item.name}}" bindtap="openWebsite">
+              <text class="merchant-website">{{item.websiteUrl}}</text>
+              <text class="website-external">↗</text>
+            </view>
+            <text wx:else class="merchant-website unavailable">商家未提供</text>
+          </view>
+        </view>
+      </view>
+      <view class="merchant-actions">
+        <text class="authorization-note {{item.vaultStatus === 'approved' ? 'authorization-approved' : ''}}" data-id="{{item.id}}" bindtap="requestMerchantAccess">
+          {{item.vaultStatus === 'approved' ? '已获得授权 · 点击看货' : item.vaultStatus === 'pending' ? '看货申请审核中' : item.vaultStatus === 'rejected' ? '申请未通过 · 重新申请' : item.vaultStatus === 'unknown' ? '授权状态暂不可用 · 点击重试' : '授权后查看商品 · 点击申请'}}
+        </text>
+        <view class="action-row">
+          <button
+            class="action-button"
+            disabled="{{!item.hasCoordinates}}"
+            data-latitude="{{item.latitude}}"
+            data-longitude="{{item.longitude}}"
+            data-name="{{item.name}}"
+            data-address="{{item.address}}"
+            bindtap="navigateToMerchant"
+          >
+            <text class="action-icon">⌖</text>
+            <text>导航</text>
+          </button>
+          <button
+            class="action-button"
+            open-type="share"
+            data-id="{{item.id}}"
+          >
+            <text class="action-icon">↗</text>
+            <text>分享</text>
+          </button>
+          <button
+            class="action-button"
+            disabled="{{!item.phone}}"
+            data-phone="{{item.phone}}"
+            bindtap="callMerchant"
+          >
+            <text class="action-icon">☎</text>
+            <text>联系商家</text>
+          </button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

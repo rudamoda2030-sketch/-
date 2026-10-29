@@ -1,0 +1,35 @@
+<site-header />
+<view class="support-page">
+  <view class="support-heading">
+    <text class="support-eyebrow">RUDA CUSTOMER CARE</text>
+    <text class="support-title">联系 RUDA 客服</text>
+    <text class="support-description">商品、库存、批发价及交期问题会提交给客服团队跟进，请留下可用联系方式。</text>
+  </view>
+
+  <view class="support-form">
+    <label class="support-field">
+      <text>姓名</text>
+      <input value="{{name}}" maxlength="120" data-field="name" bindinput="onInput" placeholder="请输入姓名" />
+    </label>
+    <label class="support-field">
+      <text>邮箱</text>
+      <input value="{{email}}" maxlength="254" type="text" data-field="email" bindinput="onInput" placeholder="客服回复邮箱（邮箱或电话至少填一项）" />
+    </label>
+    <label class="support-field">
+      <text>联系电话</text>
+      <input value="{{phone}}" maxlength="32" type="text" data-field="phone" bindinput="onInput" placeholder="方便联系的电话" />
+    </label>
+    <label class="support-field">
+      <text>咨询主题</text>
+      <input value="{{subject}}" maxlength="120" data-field="subject" bindinput="onInput" placeholder="询库存、批发价、交期或尺码" />
+    </label>
+    <label class="support-field">
+      <text>问题描述</text>
+      <textarea value="{{message}}" maxlength="4000" auto-height data-field="message" bindinput="onInput" placeholder="已自动附上当前商品和已选规格，可继续补充你的问题。" />
+    </label>
+    <text wx:if="{{error}}" class="support-error">{{error}}</text>
+    <button class="support-submit" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitRequest">
+      提交给客服
+    </button>
+  </view>
+</view>

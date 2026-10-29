@@ -1,0 +1,11 @@
+<view class="site-header" style="height: {{navBarHeight}}px; padding-top: {{statusBarHeight}}px;">
+  <view class="site-menu-button" aria-label="打开个人中心与设置" bindtap="openSettings">
+    <view class="site-menu-line"></view>
+    <view class="site-menu-line"></view>
+    <view class="site-menu-line"></view>
+  </view>
+  <view class="site-brand">
+    <view class="site-brand-name">RUDA<text class="site-brand-dot">.</text></view>
+    <text class="site-brand-caption">FASHION</text>
+  </view>
+</view>

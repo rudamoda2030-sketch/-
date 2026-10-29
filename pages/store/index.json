@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "品牌店铺",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "site-header": "/components/site-header/index"
+  }
+}

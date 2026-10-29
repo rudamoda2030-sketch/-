@@ -1,0 +1,29 @@
+<view class="tab-bar {{selected === 3 ? (fashionImmersive ? 'tab-bar-fashion tab-bar-fashion-immersive' : 'tab-bar-fashion-grid') : ''}}">
+  <view wx:if="{{selected === 3 && fashionImmersive}}" class="fashion-tab-row">
+    <button class="fashion-tab-item" data-key="home" bindtap="onFashionShortcut">
+      <view class="fashion-icon fashion-icon-home"><view></view></view><text class="fashion-tab-label">首页</text>
+    </button>
+    <button class="fashion-tab-item" data-key="friends" bindtap="onFashionShortcut">
+      <view class="fashion-icon fashion-icon-friends"><view class="fashion-friend-one"></view><view class="fashion-friend-two"></view></view><text class="fashion-tab-label">好友</text>
+    </button>
+    <button class="fashion-tab-item fashion-tab-create" data-key="create" bindtap="onFashionShortcut">
+      <text class="fashion-tab-plus">＋</text>
+    </button>
+    <button class="fashion-tab-item" data-key="profile" bindtap="onFashionShortcut">
+      <view class="fashion-icon fashion-icon-profile"><view class="fashion-profile-head"></view><view class="fashion-profile-body"></view></view><text class="fashion-tab-label">主页</text>
+    </button>
+  </view>
+  <block wx:else>
+    <button
+      wx:for="{{tabs}}"
+      wx:key="pagePath"
+      class="tab-item {{selected === item.index ? 'tab-item-selected' : ''}}"
+      data-index="{{item.index}}"
+      bindtap="switchTab"
+    >
+      <text wx:if="{{item.icon}}" class="tab-icon">{{item.icon}}</text>
+      <text class="tab-label">{{item.text}}</text>
+      <text wx:if="{{selected === item.index}}" class="tab-indicator"></text>
+    </button>
+  </block>
+</view>

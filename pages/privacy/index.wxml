@@ -1,0 +1,33 @@
+<site-header />
+<view class="screen legal-page">
+  <text class="eyebrow">RUDA PRIVACY</text>
+  <text class="page-title">RUDA 买家小程序隐私政策</text>
+  <text class="legal-updated">更新日期：2026年10月22日</text>
+  <text class="legal-intro">本政策说明 RUDA ITALIA S.R.L. 如何通过 RUDA 买家小程序处理个人信息。请在登录、下单或使用图片功能前阅读。</text>
+
+  <view class="legal-section">
+    <text class="legal-heading">一、我们处理的信息及用途</text>
+    <text class="legal-copy">账号登录：当你使用邮箱或手机号和密码登录时，我们接收你主动填写的账号信息，用于身份验证、账号安全和提供买家服务。手机号仅在你主动输入并提交时处理；小程序不会未经你的操作调用微信接口读取手机号。</text>
+    <text class="legal-copy">微信快捷登录：你选择微信快捷登录或绑定微信时，小程序向微信申请临时登录凭证并发送至 RUDA 服务端，用于取得并关联微信小程序标识（如 OpenID）和已绑定的买家账号。小程序不因此读取你的微信手机号、头像或昵称。</text>
+    <text class="legal-copy">订单与配送：下单时处理购物商品、数量、价格、你填写的街道、城市、国家、邮编及选填备注，用于创建订单、订单管理、履行配送及售后支持。当前小程序订单表单不收集收件人电话号码；请勿在备注中填写不必要的敏感个人信息。</text>
+    <text class="legal-copy">图片功能：当你使用商家商品管理功能时，你选择的商品图片会上传至 RUDA 服务端用于商品展示和管理。当你使用 ModaGPT 虚拟试衣时，你选择的人像和服装图片会发送至服务端及相应的图像处理服务，用于生成本次试衣结果；提交前会单独要求你确认授权。请仅上传你有权使用的图片并取得图片中人物的必要授权。</text>
+  </view>
+
+  <view class="legal-section">
+    <text class="legal-heading">二、信息的存储、期限与提供</text>
+    <text class="legal-copy">登录凭证通过 HTTPS 发送至 RUDA 服务端；登录令牌和必要会话资料保存在你的设备中。账号、订单和配送信息存储在 RUDA 业务系统，只有提供服务所需的授权人员和技术服务提供方可以在必要范围内处理。潜在客户资料原则上按适用的隐私政策期限管理；合同、订单和财税记录通常按法定义务及业务需要保存（网站隐私说明载明相关合同/财税记录最长可达 60 个月），依法留存或处理争议、安全事件所需的除外。期满后删除或匿名化。</text>
+    <text class="legal-copy">为完成系统托管、身份验证、订单履行、图像处理和客户支持，必要信息可能提供给相应服务提供方。RUDA 不出售个人信息；如涉及跨境处理，将按适用法律采取相应保障措施。</text>
+  </view>
+
+  <view class="legal-section">
+    <text class="legal-heading">三、你的权利和选择</text>
+    <text class="legal-copy">你可以拒绝可选信息或设备权限；不提供登录所需账号或订单必需配送信息时，相应服务可能无法使用。你可以退出登录以清除设备中的会话资料，并可申请查询、更正、删除或限制处理个人信息。依法或为履行合同、法定义务所需保留的信息，可能无法立即删除。</text>
+  </view>
+
+  <view class="legal-section">
+    <text class="legal-heading">四、数据控制者与联系方式</text>
+    <text class="legal-copy">数据控制者：RUDA ITALIA S.R.L.。地址：Via Piemonte 24, 59100 Prato, Italia。隐私或个人信息请求请发送至 rdmodasrl@gmail.com，或通过小程序「帮助与反馈」联系 RUDA。</text>
+  </view>
+
+  <navigator class="legal-document-link" url="/pages/service-agreement/index">查看《RUDA 用户服务协议》</navigator>
+</view>

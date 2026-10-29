@@ -1,0 +1,96 @@
+<site-header />
+<view class="screen market-page">
+  <text class="eyebrow">RUDA MARKETPLACE</text>
+  <text class="page-title">公共商城</text>
+  <text class="muted intro">发现 RUDA 商家公开展示的品牌与商品。</text>
+  <view class="market-shortcuts">
+    <button class="secondary-button shortcut-button" bindtap="openCart">购物车</button>
+    <button class="secondary-button shortcut-button" bindtap="openOrders">我的订单</button>
+    <button class="secondary-button shortcut-button" bindtap="openMerchantWorkspace">商家中心</button>
+  </view>
+
+  <view class="search-box">
+    <text class="search-icon">⌕</text>
+    <input
+      class="search-input"
+      placeholder="搜索品牌或商品"
+      placeholder-class="search-placeholder"
+      value="{{searchText}}"
+      confirm-type="search"
+      bindinput="onSearchInput"
+      bindconfirm="onSearchConfirm"
+    />
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">精选商品</text>
+    <text class="section-note">PUBLIC COLLECTION</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="empty-state">
+    <text class="empty-title">正在加载商品</text>
+    <text class="muted">请稍候。</text>
+  </view>
+  <view wx:elif="{{productError}}" class="empty-state">
+    <text class="empty-title">商品暂时无法加载</text>
+    <text class="muted">{{productError}}</text>
+  </view>
+  <view wx:elif="{{products.length === 0}}" class="empty-state">
+    <text class="empty-title">商城即将呈现</text>
+    <text class="muted">当前没有可展示的公开商品。</text>
+  </view>
+  <view wx:else class="product-list">
+    <view
+      wx:for="{{products}}"
+      wx:key="id"
+      class="product-card"
+      data-id="{{item.id}}"
+      bindtap="openProduct"
+    >
+      <image wx:if="{{item.coverImage}}" class="product-image" src="{{item.coverImage}}" mode="aspectFill" />
+      <view class="product-info">
+        <text class="product-brand">{{item.brand || item.merchantName}}</text>
+        <text class="product-name">{{item.name}}</text>
+        <text class="product-style">款号 {{item.styleNo}}</text>
+        <text class="product-price">{{item.displayPrice}}</text>
+      </view>
+      <text class="product-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">品牌店铺</text>
+    <text class="section-note">DISCOVER BRANDS</text>
+  </view>
+  <view wx:if="{{merchantError}}" class="empty-state compact-empty">
+    <text class="muted">品牌店铺暂时无法加载：{{merchantError}}</text>
+  </view>
+  <view wx:elif="{{merchants.length === 0}}" class="surface store-entry" bindtap="openStore">
+    <view>
+      <text class="entry-title">通过分享链接进入店铺</text>
+      <text class="entry-copy">每家商家拥有独立的品牌主页与商品目录</text>
+    </view>
+    <text class="entry-arrow">↗</text>
+  </view>
+  <view wx:else class="merchant-list">
+    <view
+      wx:for="{{merchants}}"
+      wx:key="id"
+      class="merchant-card"
+      data-slug="{{item.storeSlug}}"
+      bindtap="openStore"
+    >
+      <image wx:if="{{item.logoUrl}}" class="merchant-logo" src="{{item.logoUrl}}" mode="aspectFill" />
+      <view class="merchant-info">
+        <text class="entry-title">{{item.name}}</text>
+        <text class="entry-copy">{{item.city}} · {{item.country}}</text>
+      </view>
+      <text class="entry-arrow">›</text>
+    </view>
+  </view>
+  <view class="market-legal-links">
+    <navigator url="/pages/service-agreement/index">用户服务协议</navigator>
+    <text>·</text>
+    <navigator url="/pages/privacy/index">隐私政策</navigator>
+  </view>
+</view>

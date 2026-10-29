@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "联系客服",
+  "navigationStyle": "custom",
+  "usingComponents": {
+    "site-header": "/components/site-header/index"
+  }
+}

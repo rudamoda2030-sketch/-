@@ -1,0 +1,26 @@
+<site-header />
+<view class="screen product-create-page">
+  <text class="eyebrow">MERCHANT PRODUCT</text>
+  <text class="page-title">新增商品</text>
+  <view class="surface create-form">
+    <button class="image-picker" bindtap="chooseImage">
+      <image wx:if="{{imagePath}}" class="image-preview" src="{{imagePath}}" mode="aspectFill" />
+      <text wx:else class="image-placeholder">选择商品主图</text>
+    </button>
+    <label class="create-field"><text>商品名称</text><input data-field="name" value="{{name}}" maxlength="200" placeholder="商品名称" bindinput="onInput" /></label>
+    <label class="create-field"><text>款号</text><input data-field="styleNo" value="{{styleNo}}" maxlength="100" placeholder="商家商品款号" bindinput="onInput" /></label>
+    <label class="create-field"><text>分类</text><picker range="{{categories}}" range-key="label" value="{{categoryIndex}}" bindchange="onCategoryChange"><view class="picker-value">{{categories[categoryIndex].label}}　›</view></picker></label>
+    <label class="create-field"><text>批发价（EUR）</text><input data-field="wholesalePrice" type="digit" value="{{wholesalePrice}}" placeholder="0.00" bindinput="onInput" /></label>
+    <label class="create-field"><text>批量价（可选，EUR）</text><input data-field="wholesalePrice100" type="digit" value="{{wholesalePrice100}}" placeholder="达到 100 件时适用" bindinput="onInput" /></label>
+    <label class="create-field"><text>建议零售价（EUR）</text><input data-field="rrpPrice" type="digit" value="{{rrpPrice}}" placeholder="0.00" bindinput="onInput" /></label>
+    <label class="create-field"><text>起订量</text><input data-field="moq" type="number" value="{{moq}}" bindinput="onInput" /></label>
+    <view class="sku-heading"><text class="section-title">首个商品规格</text><text class="muted">新增后可在商家后台继续扩展尺码和颜色。</text></view>
+    <label class="create-field"><text>颜色</text><input data-field="color" value="{{color}}" placeholder="例如：黑色" bindinput="onInput" /></label>
+    <label class="create-field"><text>尺码</text><input data-field="size" value="{{size}}" placeholder="例如：M" bindinput="onInput" /></label>
+    <label class="create-field"><text>SKU 编码</text><input data-field="sku" value="{{sku}}" placeholder="唯一 SKU" bindinput="onInput" /></label>
+    <label class="create-field"><text>初始库存</text><input data-field="stock" type="number" value="{{stock}}" bindinput="onInput" /></label>
+  </view>
+  <text class="muted create-note">商品先以草稿保存。确认商品资料与规格后，在商品管理中提交审核；图片上传需要服务端对象存储正常配置。</text>
+  <view wx:if="{{error}}" class="create-error">{{error}}</view>
+  <button class="primary-button create-submit" loading="{{loading}}" disabled="{{loading}}" bindtap="submit">{{loading ? '正在创建…' : '创建商品草稿'}}</button>
+</view>

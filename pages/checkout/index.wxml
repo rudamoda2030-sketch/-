@@ -1,0 +1,57 @@
+<site-header />
+<view class="screen checkout-page">
+  <text class="eyebrow">ORDER CONFIRMATION</text>
+  <text class="page-title">确认订单</text>
+  <view class="surface checkout-card">
+    <text class="section-title">配送地址</text>
+    <label class="checkout-field">
+      <text>街道地址</text>
+      <input data-field="street" value="{{street}}" placeholder="街道、门牌号" bindinput="onFieldInput" />
+    </label>
+    <label class="checkout-field">
+      <text>城市</text>
+      <input data-field="city" value="{{city}}" placeholder="城市" bindinput="onFieldInput" />
+    </label>
+    <label class="checkout-field">
+      <text>国家</text>
+      <input data-field="country" value="{{country}}" placeholder="国家/地区" bindinput="onFieldInput" />
+    </label>
+    <label class="checkout-field">
+      <text>邮编</text>
+      <input data-field="zip" value="{{zip}}" placeholder="邮政编码" bindinput="onFieldInput" />
+    </label>
+    <label class="checkout-field">
+      <text>订单备注</text>
+      <textarea data-field="notes" value="{{notes}}" maxlength="500" placeholder="选填" bindinput="onFieldInput" />
+    </label>
+  </view>
+  <view class="surface checkout-card payment-notice">
+    <text class="section-title">付款方式</text>
+    <text class="checkout-copy">付款方式将在商家接受订单后选择</text>
+    <text class="muted checkout-note">提交订单不会扣款。商家确认供货、价格和运费后，您可在订单中心选择可用付款方式。</text>
+  </view>
+  <view class="surface checkout-card total-card">
+    <text>共 {{itemCount}} 件</text>
+    <text class="summary-total">商品金额预估 {{displayEstimatedTotal}}</text>
+    <text class="muted checkout-note">此金额不含待商家确认的运费及其他费用，不是最终应付金额；商家审核时确认供货和最终价格。</text>
+  </view>
+  <view class="checkout-legal">
+    <checkbox-group bindchange="onLegalConsentChange">
+      <label class="checkout-legal-row">
+        <checkbox value="terms" color="#1d1b19" checked="{{acceptedTerms}}" />
+        <text>我已阅读并同意</text>
+        <text class="checkout-legal-link" data-document="terms" catchtap="openLegalDocument">《用户服务协议》</text>
+      </label>
+      <label class="checkout-legal-row">
+        <checkbox value="privacy" color="#1d1b19" checked="{{acceptedPrivacy}}" />
+        <text>我已阅读并同意</text>
+        <text class="checkout-legal-link" data-document="privacy" catchtap="openLegalDocument">《隐私政策》</text>
+      </label>
+    </checkbox-group>
+    <text class="checkout-legal-note">配送地址和订单信息仅用于订单处理、配送及售后服务。</text>
+  </view>
+  <view wx:if="{{error}}" class="checkout-error">{{error}}</view>
+  <button class="primary-button checkout-submit" loading="{{loading}}" disabled="{{loading}}" bindtap="submitOrder">
+    {{loading ? '正在提交…' : '提交订单'}}
+  </button>
+</view>

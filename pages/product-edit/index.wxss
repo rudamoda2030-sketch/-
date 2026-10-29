@@ -1,0 +1,48 @@
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 22rpx;
+}
+
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18rpx;
+  color: #71695f;
+  font-size: 22rpx;
+}
+
+.edit-field:last-child {
+  margin-bottom: 0;
+}
+
+.edit-field input,
+.edit-field textarea {
+  margin-top: 8rpx;
+  padding: 16rpx;
+  border: 1rpx solid #e5e0d9;
+  border-radius: 6rpx;
+  color: #1d1b19;
+  font-size: 24rpx;
+}
+
+.edit-field textarea {
+  min-height: 150rpx;
+}
+
+.edit-note {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.edit-error {
+  margin-top: 16rpx;
+  color: #a3342b;
+  font-size: 22rpx;
+}
+
+.edit-save {
+  margin: 22rpx 0 40rpx;
+}

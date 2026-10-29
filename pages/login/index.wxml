@@ -1,0 +1,121 @@
+<site-header />
+<view class="screen login-page">
+  <view class="login-panel">
+  <view wx:if="{{registerMode}}" class="register-progress">
+    <view class="register-progress-copy">
+      <text>{{registerStep === 1 ? '01' : '02'}}</text>
+      <text class="progress-divider">/</text>
+      <text class="progress-muted">02</text>
+    </view>
+    <view class="register-progress-track"><view class="register-progress-fill {{registerStep === 2 ? 'register-progress-complete' : ''}}"></view></view>
+  </view>
+  <text class="login-title">{{registerMode ? '邮箱注册' : (selectedRole === 'merchant' ? '企业中心' : selectedRole === 'employee' ? '员工登录' : '账号登录')}}</text>
+
+  <view wx:if="{{!registerMode || registerStep === 1}}" class="form-field">
+    <text class="field-label">{{registerMode ? '邮箱 *' : (selectedRole === 'merchant' ? '登录账号' : '账号')}}</text>
+    <view class="account-field">
+      <input
+        class="field-input account-input"
+        value="{{account}}"
+        type="text"
+        placeholder="{{registerMode ? '请输入邮箱地址' : (selectedRole === 'merchant' ? '邮箱、手机号或商家编码' : '邮箱或手机号')}}"
+        placeholder-class="field-placeholder"
+        bindinput="onAccountInput"
+      />
+      <button
+        wx:if="{{registerMode}}"
+        class="inline-code-button"
+        loading="{{codeSending}}"
+        disabled="{{loading || codeSending}}"
+        bindtap="sendRegistrationCode"
+      >{{codeSending ? '发送中' : '验证'}}</button>
+    </view>
+  </view>
+
+  <view wx:if="{{registerMode && registerStep === 2}}" class="registration-email-summary">
+    <text class="field-label">注册邮箱</text>
+    <text class="registration-email">{{account}}</text>
+  </view>
+
+  <view wx:if="{{registerMode && registerStep === 2}}" class="form-field verification-field">
+    <text class="field-label">邮箱验证码</text>
+    <input
+      class="field-input"
+      value="{{verificationCode}}"
+      type="number"
+      maxlength="6"
+      placeholder="请输入验证码"
+      placeholder-class="field-placeholder"
+      bindinput="onVerificationCodeInput"
+    />
+  </view>
+
+  <view wx:if="{{!registerMode || registerStep === 1}}" class="form-field">
+    <text class="field-label">登录密码</text>
+    <view class="password-field">
+      <input
+        class="field-input password-input"
+        value="{{password}}"
+        password="{{!showPassword}}"
+        placeholder="{{registerMode ? '至少 8 位' : '请输入密码'}}"
+        placeholder-class="field-placeholder"
+        bindinput="onPasswordInput"
+      />
+      <text class="password-toggle" bindtap="togglePasswordVisibility">{{showPassword ? '隐藏' : '显示'}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{registerMode ? registerStep === 1 : selectedRole !== 'buyer'}}" class="legal-consent">
+    <checkbox-group bindchange="onLegalConsentChange">
+      <label class="legal-consent-label">
+        <checkbox value="terms" color="#1d1b19" checked="{{acceptedTerms}}" />
+        <text>我已阅读并同意</text>
+        <navigator class="legal-link" url="/pages/service-agreement/index">《用户服务协议》</navigator>
+      </label>
+      <label class="legal-consent-label">
+        <checkbox value="privacy" color="#1d1b19" checked="{{acceptedPrivacy}}" />
+        <text>我已阅读并同意</text>
+        <navigator class="legal-link" url="/pages/privacy/index">《隐私政策》</navigator>
+      </label>
+    </checkbox-group>
+  </view>
+
+  <button class="primary-button login-button" loading="{{loading}}" disabled="{{loading || codeSending}}" bindtap="onSubmit">
+    {{loading ? '请稍候…' : (registerMode ? (registerStep === 1 ? '下一步' : '完成注册') : '登录')}}
+  </button>
+  <view wx:if="{{selectedRole === 'buyer' && !registerMode}}" class="auth-footer">
+    <text class="auth-footer-link" bindtap="goToRegistration">邮箱注册</text>
+  </view>
+  <view wx:if="{{registerMode && registerStep === 1}}" class="auth-footer">
+    <text class="auth-footer-link" bindtap="goToLogin">返回登录</text>
+  </view>
+  <view wx:if="{{selectedRole === 'merchant' || selectedRole === 'employee'}}" class="auth-footer">
+    <text class="auth-footer-link" bindtap="goToRegistration">邮箱注册</text>
+  </view>
+  <view wx:if="{{registerMode && registerStep === 2}}" class="auth-footer">
+    <text class="auth-footer-link" bindtap="returnToRegistrationDetails">返回上一步</text>
+  </view>
+  <button
+    wx:if="{{hasBuyerSession && returnTab === 'settings' && !registerMode}}"
+    class="wechat-bind-link"
+    disabled="{{loading}}"
+    bindtap="onBindWechat"
+  >绑定微信</button>
+  <view wx:if="{{error}}" class="login-error">{{error}}</view>
+  <view wx:if="{{merchantChoices.length}}" class="merchant-choices">
+    <text class="choices-title">选择要登录的账号</text>
+    <view
+      wx:for="{{merchantChoices}}"
+      wx:key="id"
+      class="merchant-choice"
+      data-id="{{item.id}}"
+      bindtap="selectMerchant"
+    >
+      <view>
+        <text class="choice-name">{{item.name}}</text>
+      </view>
+      <text class="choice-arrow">›</text>
+    </view>
+  </view>
+  </view>
+</view>

@@ -1,0 +1,139 @@
+<site-header />
+<view class="settings-page">
+  <view wx:if="{{isBuyer && isLoggedIn}}" class="creator-hub">
+    <view wx:if="{{fashionProfileLoading}}" class="creator-hub-state">正在加载个人主页</view>
+    <view wx:elif="{{fashionProfileError}}" class="creator-hub-state">
+      <text>{{fashionProfileError}}</text>
+      <text class="creator-hub-retry" bindtap="refreshFashionProfile">重试</text>
+    </view>
+    <block wx:elif="{{fashionProfile}}">
+      <view class="creator-hub-profile">
+        <image wx:if="{{fashionProfile.avatarUrl}}" class="creator-hub-avatar" src="{{fashionProfile.avatarUrl}}" mode="aspectFill" />
+        <text wx:else class="creator-hub-avatar creator-hub-avatar-fallback">{{fashionProfile.initial}}</text>
+        <view class="creator-hub-identity">
+          <text class="creator-hub-name">{{fashionProfile.displayName || 'RUDA 创作者'}}</text>
+          <text wx:if="{{fashionProfile.bio}}" class="creator-hub-bio">{{fashionProfile.bio}}</text>
+          <text wx:else class="creator-hub-bio">暂无简介</text>
+        </view>
+        <text class="creator-hub-edit" bindtap="openFashionProfileEditor">编辑</text>
+      </view>
+      <view class="creator-hub-stats">
+        <view><text>{{fashionProfile.stats.posts || 0}}</text><text>作品</text></view>
+        <view><text>{{fashionProfile.stats.followers || 0}}</text><text>关注者</text></view>
+        <view><text>{{fashionProfile.stats.following || 0}}</text><text>关注</text></view>
+        <view><text>{{fashionProfile.stats.saved || 0}}</text><text>收藏</text></view>
+      </view>
+      <view class="creator-hub-actions">
+        <view class="creator-hub-action creator-hub-action-primary" bindtap="openFashionCreatorHub">进入时尚</view>
+        <view class="creator-hub-action" bindtap="openFashionComposer">发布作品</view>
+      </view>
+      <view class="creator-hub-posts-heading">
+        <text>我的作品</text>
+        <text>{{fashionProfile.stats.posts || 0}}</text>
+      </view>
+      <view wx:if="{{!fashionPosts.length}}" class="creator-hub-empty">还没有作品，发布后会显示在这里</view>
+      <view wx:else class="creator-hub-post-grid">
+        <view wx:for="{{fashionPosts}}" wx:key="id" class="creator-hub-post" data-id="{{item.id}}" data-status="{{item.publicationStatus}}" bindtap="openFashionProfilePost">
+          <image wx:if="{{item.imageUrl}}" class="creator-hub-post-image" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+          <view wx:else class="creator-hub-post-placeholder"></view>
+          <text wx:if="{{item.mediaType === 'video'}}" class="creator-hub-video-mark">▶</text>
+          <text class="creator-hub-post-status">{{item.statusLabel}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <view wx:else class="account-card" bindtap="openAccount">
+    <view class="account-copy">
+      <text class="account-title">{{accountTitle}}</text>
+      <text class="account-description">{{accountDescription}}</text>
+    </view>
+    <view class="account-action"><text>›</text></view>
+  </view>
+
+  <view class="settings-group enterprise-entry-group">
+    <view class="settings-row settings-row-last" bindtap="openEnterpriseCenter">
+      <view class="preference-copy">
+        <text class="row-title">企业中心</text>
+        <text class="row-note">打开 RUDA 商家后台小程序，登录或注册企业账号</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="settings-group preference-group">
+    <view class="preference-row">
+      <text class="row-title">网站语言</text>
+      <picker mode="selector" range="{{languages}}" value="{{languageIndex}}" bindchange="onLanguageChange">
+        <view class="picker-value">{{languageLabel}}<text class="picker-arrow">⌄</text></view>
+      </picker>
+    </view>
+    <view class="preference-row">
+      <text class="row-title">展示货币</text>
+      <picker mode="selector" range="{{currencies}}" value="{{currencyIndex}}" bindchange="onCurrencyChange">
+        <view class="picker-value">{{currencyLabel}}<text class="picker-arrow">⌄</text></view>
+      </picker>
+    </view>
+    <view class="preference-row preference-row-last">
+      <view class="preference-copy">
+        <text class="row-title">黑白显示模式</text>
+        <text class="row-note">同步至 Web 偏好</text>
+      </view>
+      <switch checked="{{monochrome}}" color="#252421" bindchange="onMonochromeChange" />
+    </view>
+  </view>
+
+  <view class="settings-group">
+    <view class="settings-row" bindtap="showAnalyticsPrivacy">
+      <view class="preference-copy">
+        <text class="row-title">分析与隐私</text>
+        <text class="row-note">小程序不使用 Web 营销分析</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
+    <view wx:if="{{isBuyer}}" class="settings-row settings-row-last" bindtap="bindWechat">
+      <view class="preference-copy">
+        <text class="row-title">账号登录方式</text>
+        <text class="row-note">绑定微信快捷登录</text>
+      </view>
+      <text class="row-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="status-area">
+    <view class="sync-status" role="status">{{syncStatus}}</view>
+    <view wx:if="{{prefsNotice}}" class="sync-status">{{prefsNotice}}</view>
+    <view wx:if="{{prefsError}}" class="preference-error" role="alert">{{prefsError}}</view>
+  </view>
+
+  <view class="settings-group legal-group">
+    <navigator class="settings-row" url="/pages/privacy/index">
+      <text class="row-title">隐私政策</text>
+      <text class="row-arrow">›</text>
+    </navigator>
+    <navigator class="settings-row" url="/pages/service-agreement/index">
+      <text class="row-title">用户服务协议</text>
+      <text class="row-arrow">›</text>
+    </navigator>
+    <view class="settings-row settings-row-last" bindtap="showAbout">
+      <text class="row-title">关于 RUDA</text>
+      <text class="row-arrow">›</text>
+    </view>
+  </view>
+
+  <button wx:if="{{isLoggedIn}}" class="logout-button" bindtap="confirmLogout">退出登录</button>
+
+  <view wx:if="{{profileEditorOpen}}" class="profile-editor-mask" bindtap="closeFashionProfileEditor">
+    <view class="profile-editor-sheet" catchtap="stopProfileEditorTap">
+      <view class="profile-editor-heading">
+        <text>编辑个人资料</text>
+        <text class="profile-editor-close" bindtap="closeFashionProfileEditor">×</text>
+      </view>
+      <text class="profile-editor-label">昵称</text>
+      <input class="profile-editor-input" value="{{profileEditName}}" maxlength="80" data-field="name" bindinput="onProfileEditInput" placeholder="输入昵称" />
+      <text class="profile-editor-label">简介</text>
+      <textarea class="profile-editor-textarea" value="{{profileEditBio}}" maxlength="300" data-field="bio" bindinput="onProfileEditInput" placeholder="介绍一下自己" />
+      <button class="profile-editor-save" loading="{{profileSaving}}" disabled="{{profileSaving}}" bindtap="saveFashionProfile">保存</button>
+    </view>
+  </view>
+</view>

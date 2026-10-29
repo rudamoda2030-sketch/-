@@ -1,0 +1,58 @@
+<site-header />
+<view class="screen">
+  <text class="eyebrow">INDEPENDENT STOREFRONT</text>
+  <text class="page-title">品牌店铺</text>
+
+  <view wx:if="{{loading}}" class="empty-state route-empty">
+    <text class="empty-title">正在加载店铺</text>
+    <text class="muted">请稍候。</text>
+  </view>
+  <view wx:elif="{{error}}" class="empty-state route-empty">
+    <text class="empty-title">店铺暂时无法打开</text>
+    <text class="muted">{{error}}</text>
+  </view>
+  <block wx:elif="{{merchant}}">
+    <image wx:if="{{merchant.bannerUrl}}" class="store-banner" src="{{merchant.bannerUrl}}" mode="aspectFill" />
+    <view class="store-header">
+      <image wx:if="{{merchant.logoUrl}}" class="store-logo" src="{{merchant.logoUrl}}" mode="aspectFill" />
+      <view class="store-name-block">
+        <text class="store-name">{{merchant.name}}</text>
+        <text class="muted">{{merchant.city}} · {{merchant.country}}</text>
+      </view>
+    </view>
+    <text wx:if="{{merchant.tagline}}" class="store-tagline">{{merchant.tagline}}</text>
+    <text wx:if="{{merchant.description}}" class="store-description">{{merchant.description}}</text>
+
+    <view class="section-heading">
+      <text class="section-title">店铺商品</text>
+      <text class="section-note">{{products.length}} ITEMS</text>
+    </view>
+    <view wx:if="{{products.length === 0}}" class="empty-state">
+      <text class="empty-title">暂无公开商品</text>
+      <text class="muted">该店铺当前没有可公开展示的商品。</text>
+    </view>
+    <view wx:else class="product-list">
+      <view
+        wx:for="{{products}}"
+        wx:key="id"
+        class="product-card"
+        data-id="{{item.id}}"
+        bindtap="openProduct"
+      >
+        <image wx:if="{{item.coverImage}}" class="product-image" src="{{item.coverImage}}" mode="aspectFill" />
+        <view class="product-info">
+          <text class="product-brand">{{item.brand}}</text>
+          <text class="product-name">{{item.name}}</text>
+          <text class="product-style">款号 {{item.styleNo}}</text>
+          <text class="product-price">{{item.displayPrice}}</text>
+        </view>
+        <text class="product-arrow">›</text>
+      </view>
+    </view>
+  </block>
+
+  <view wx:else class="empty-state route-empty">
+    <text class="empty-title">进入指定品牌店铺</text>
+    <text class="muted">请打开商家分享的小程序链接或小程序码，即可直达对应店铺。</text>
+  </view>
+</view>

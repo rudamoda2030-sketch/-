@@ -1,0 +1,84 @@
+<site-header />
+<view class="find-store-page">
+  <view class="find-store-content">
+    <text class="find-store-title">找店</text>
+    <view class="store-code-field">
+      <input
+        class="store-code-input"
+        value="{{storeCode}}"
+        placeholder="输入六位商家代码或搜索商家名称"
+        placeholder-class="store-code-placeholder"
+        maxlength="40"
+        confirm-type="go"
+        bindinput="onCodeInput"
+        bindconfirm="onSubmit"
+      />
+      <view class="scan-button" aria-label="扫一扫" bindtap="scanStore">
+        <view class="scan-mark">
+          <view class="scan-corner scan-corner-tl"></view>
+          <view class="scan-corner scan-corner-tr"></view>
+          <view class="scan-corner scan-corner-bl"></view>
+          <view class="scan-corner scan-corner-br"></view>
+          <view class="scan-center"></view>
+        </view>
+      </view>
+    </view>
+    <button class="find-store-button" loading="{{loading}}" disabled="{{loading}}" bindtap="findStore">
+      {{loading ? '正在查询' : '找店'}}
+    </button>
+    <view wx:if="{{searchResults.length}}" class="find-store-results">
+      <view
+        wx:for="{{searchResults}}"
+        wx:key="id"
+        class="find-store-result"
+        data-slug="{{item.storeSlug}}"
+        bindtap="openSearchResult"
+      >
+        <image wx:if="{{item.logoUrl}}" class="find-store-result-logo" src="{{item.logoUrl}}" mode="aspectFill" />
+        <view wx:else class="find-store-result-logo find-store-result-fallback">{{item.logoFallback}}</view>
+        <view class="find-store-result-info">
+          <text class="find-store-result-name">{{item.name}}</text>
+          <text class="find-store-result-location">{{item.city}} {{item.country}}</text>
+        </view>
+        <text class="find-store-result-arrow">›</text>
+      </view>
+    </view>
+    <view class="find-store-links">
+      <button class="find-store-link" bindtap="openAllMerchants">更多商家</button>
+      <button class="find-store-link" bindtap="openDiscountHome">折扣商品</button>
+    </view>
+    <text wx:if="{{message}}" class="find-store-message">{{message}}</text>
+    <view class="my-card-entry" bindtap="showMyCard">
+      <view class="my-card-qr-icon" aria-hidden="true">
+        <view class="my-card-qr-corner my-card-qr-tl"></view>
+        <view class="my-card-qr-corner my-card-qr-tr"></view>
+        <view class="my-card-qr-corner my-card-qr-bl"></view>
+        <view class="my-card-qr-dot my-card-qr-dot-one"></view>
+        <view class="my-card-qr-dot my-card-qr-dot-two"></view>
+        <view class="my-card-qr-dot my-card-qr-dot-three"></view>
+      </view>
+      <text>{{cardLoading ? '正在识别身份…' : showMerchantCard ? '收起名片' : '我的名片'}}</text>
+    </view>
+    <text wx:if="{{cardMessage}}" class="my-card-message">{{cardMessage}}</text>
+    <view wx:if="{{showMerchantAccountActions}}" class="my-card-actions">
+      <button class="my-card-register" bindtap="openMerchantRegistration">注册商家</button>
+      <button class="my-card-login" bindtap="openMerchantLogin">已有账号，去登录</button>
+    </view>
+    <view wx:if="{{showMerchantCard && merchantCard}}" class="merchant-card">
+      <view class="merchant-card-heading">
+        <image wx:if="{{merchantCard.logoUrl}}" class="merchant-card-logo" src="{{merchantCard.logoUrl}}" mode="aspectFill" />
+        <view wx:else class="merchant-card-logo merchant-card-logo-fallback">{{merchantCard.logoFallback}}</view>
+        <view class="merchant-card-identity">
+          <text class="merchant-card-name">{{merchantCard.name}}</text>
+        </view>
+      </view>
+      <view class="merchant-card-details">
+        <text wx:if="{{merchantCard.code}}">商家编号 {{merchantCard.code}}</text>
+        <text wx:if="{{merchantCard.city || merchantCard.country}}">{{merchantCard.city}} {{merchantCard.country}}</text>
+      </view>
+      <image wx:if="{{merchantCard.qrUrl}}" class="merchant-card-qr" src="{{merchantCard.qrUrl}}" mode="aspectFit" />
+      <text wx:if="{{merchantCard.qrUrl}}" class="merchant-card-qr-label">扫码打开本店</text>
+      <button wx:if="{{merchantCard.storeSlug}}" class="merchant-card-share" open-type="share">分享我的店铺名片</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,148 @@
+<site-header />
+<view class="screen">
+  <text class="eyebrow">MERCHANT WORKSPACE</text>
+  <text class="page-title">商家中心</text>
+  <text class="muted merchant-intro">管理你的商品、库存、订单与品牌店铺。</text>
+
+  <view wx:if="{{loading}}" class="empty-state merchant-state">
+    <text class="empty-title">正在验证账户</text>
+    <text class="muted">正在确认商家授权状态。</text>
+  </view>
+  <view wx:elif="{{error}}" class="empty-state merchant-state">
+    <text class="empty-title">账户状态暂时无法加载</text>
+    <text class="muted">{{error}}</text>
+  </view>
+  <view wx:elif="{{merchant}}" class="merchant-profile">
+    <view>
+      <text class="gate-title">{{merchant.name}}</text>
+      <text class="gate-copy">{{account.name}} · {{role === 'employee' ? '员工账号' : '商家账号'}}</text>
+    </view>
+    <button class="text-button logout-button" bindtap="logout">退出</button>
+  </view>
+  <view wx:elif="{{!loading && !error}}" class="merchant-gate">
+    <view>
+      <text class="gate-title">商家账户</text>
+      <text class="gate-copy">登录已有账号进入所属店铺；还没有账号可注册企业账号。</text>
+    </view>
+    <view class="login-entry-buttons">
+      <button class="secondary-button gate-button" bindtap="openMerchantLogin">商家登录</button>
+      <button class="secondary-button gate-button" bindtap="openEmployeeLogin">员工登录</button>
+      <button class="secondary-button gate-button" bindtap="openMerchantRegistration">企业注册</button>
+    </view>
+  </view>
+
+  <view class="section-heading">
+    <text class="section-title">工作区</text>
+    <text class="section-note">MERCHANT TOOLS</text>
+  </view>
+
+  <view class="module-list">
+    <view
+      wx:for="{{modules}}"
+      wx:key="id"
+      class="module-row"
+      data-id="{{item.id}}"
+      data-title="{{item.title}}"
+      bindtap="openModule"
+    >
+      <view>
+        <text class="module-title">{{item.title}}</text>
+        <text class="module-description">{{item.description}}</text>
+      </view>
+      <text class="module-arrow">›</text>
+    </view>
+  </view>
+
+  <view wx:if="{{activeModule}}" class="workspace-panel">
+    <view class="workspace-heading">
+      <text class="section-title">{{activeModule === 'products' ? '商品管理' : activeModule === 'inventory' ? '库存管理' : activeModule === 'orders' ? '订单管理' : '店铺管理'}}</text>
+      <text class="workspace-back" bindtap="backToModules">返回</text>
+    </view>
+    <view wx:if="{{activeModule === 'storefront' && merchant}}" class="store-link" bindtap="openStore">
+      <text class="store-link-title">查看独立店铺</text>
+      <text class="store-link-arrow">↗</text>
+    </view>
+    <view wx:elif="{{workspaceLoading}}" class="empty-state compact-empty">
+      <text class="muted">正在加载工作区…</text>
+    </view>
+    <view wx:elif="{{workspaceError}}" class="empty-state compact-empty">
+      <text class="empty-title">无法加载此工作区</text>
+      <text class="muted">{{workspaceError}}</text>
+      <button class="secondary-button retry-button" data-id="{{activeModule}}" bindtap="openModule">重试</button>
+    </view>
+    <block wx:elif="{{activeModule === 'products'}}">
+      <button class="primary-button create-product-button" bindtap="createProduct">新增商品</button>
+      <view wx:if="{{!products.length}}" class="empty-state compact-empty"><text class="muted">暂时没有商品。</text></view>
+      <view wx:for="{{products}}" wx:key="id" class="workspace-row">
+        <image wx:if="{{item.coverImage}}" class="workspace-image" src="{{item.coverImage}}" mode="aspectFill" />
+        <view class="workspace-copy">
+          <text class="module-title">{{item.name}}</text>
+          <text class="module-description">{{item.styleNo}} · {{item.displayPrice}} · {{item.lifecycleStatus}}</text>
+          <button class="text-button workspace-action" data-id="{{item.id}}" bindtap="editProduct">编辑商品资料</button>
+          <button wx:if="{{item.lifecycleStatus === 'published' || item.lifecycleStatus === 'draft'}}" class="text-button workspace-action" data-id="{{item.id}}" data-status="{{item.nextLifecycleStatus}}" bindtap="updateProductLifecycle">{{item.nextLifecycleAction}}</button>
+          <text wx:elif="{{item.lifecycleStatus === 'pending_review'}}" class="muted module-description">审核中</text>
+        </view>
+      </view>
+    </block>
+    <block wx:elif="{{activeModule === 'orders'}}">
+      <view wx:if="{{!orders.length}}" class="empty-state compact-empty"><text class="muted">暂时没有订单。</text></view>
+      <view wx:for="{{orders}}" wx:key="id" class="workspace-row workspace-order">
+        <view class="workspace-copy">
+          <text class="module-title">{{item.orderNo}}</text>
+          <text class="module-description">{{item.status}} · {{item.totalQty}} 件 · {{item.displayAmount}}</text>
+          <text class="module-description">{{item.companyName}}</text>
+          <block wx:if="{{item.nextStatus}}">
+            <input
+              wx:if="{{item.nextStatus === 'shipped' && item.deliveryType === 'shipping'}}"
+              class="adjustment-input"
+              data-id="{{item.id}}"
+              data-field="carrierInput"
+              value="{{item.carrierInput}}"
+              placeholder="承运商"
+              bindinput="onFulfillmentInput"
+            />
+            <input
+              wx:if="{{item.nextStatus === 'shipped' && item.deliveryType === 'shipping'}}"
+              class="adjustment-input"
+              data-id="{{item.id}}"
+              data-field="trackingInput"
+              value="{{item.trackingInput}}"
+              placeholder="物流单号"
+              bindinput="onFulfillmentInput"
+            />
+            <button class="text-button workspace-action" data-id="{{item.id}}" bindtap="advanceOrder">
+              {{item.nextStatus === 'confirmed' ? '确认接单' : item.nextStatus === 'picking' ? '开始配货' : item.nextStatus === 'shipped' ? (item.deliveryType === 'showroom_pickup' ? '设为待提货' : '确认发货') : '确认送达'}}
+            </button>
+          </block>
+        </view>
+      </view>
+    </block>
+    <block wx:elif="{{activeModule === 'inventory'}}">
+      <view wx:if="{{!balances.length}}" class="empty-state compact-empty"><text class="muted">暂无库存余额或当前账号无库存权限。</text></view>
+      <view wx:for="{{balances}}" wx:key="id" class="workspace-row inventory-row">
+        <view class="workspace-copy">
+          <text class="module-title">{{item.product.name}}</text>
+          <text class="module-description">{{item.sku}} · {{item.color}} / {{item.size}}</text>
+          <button class="text-button workspace-action" data-id="{{item.id}}" bindtap="selectInventoryBalance">调整库存</button>
+        </view>
+        <view class="inventory-quantity">
+          <text>可售 {{item.availableQuantity}}</text>
+          <text class="module-description">在库 {{item.onHandQuantity}} · 占用 {{item.reservedQuantity}}</text>
+        </view>
+      </view>
+      <view wx:if="{{selectedBalance}}" class="surface adjustment-panel">
+        <text class="section-title">{{selectedBalance.product.name}} · {{selectedBalance.sku}}</text>
+        <text class="module-description">输入正数增加库存，负数减少库存。减少后不能低于已占用数量。</text>
+        <input class="adjustment-input" type="text" data-field="quantity" value="{{adjustmentQuantity}}" placeholder="数量变化，例如 5 或 -2" bindinput="onAdjustmentInput" />
+        <input class="adjustment-input" data-field="note" value="{{adjustmentNote}}" placeholder="调整原因（必填）" bindinput="onAdjustmentInput" />
+        <button class="secondary-button adjustment-submit" bindtap="submitInventoryAdjustment">确认调整</button>
+      </view>
+    </block>
+  </view>
+
+  <view wx:if="{{merchant}}" class="store-link" bindtap="openStore">
+    <text class="store-link-title">查看独立店铺</text>
+    <text class="store-link-arrow">↗</text>
+  </view>
+  <text class="muted module-note">商品、履约和库存操作由服务端按商家租户及员工权限校验；库存调整要求填写原因并使用版本校验。</text>
+</view>
