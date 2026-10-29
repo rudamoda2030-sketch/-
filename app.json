@@ -1,0 +1,67 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/merchants/index",
+    "pages/webview/index",
+    "pages/modagpt/index",
+    "pages/fashion/index",
+    "pages/find-store/index",
+    "pages/market/index",
+    "pages/profile/index",
+    "pages/authorizations/index",
+    "pages/notifications/index",
+    "pages/store/index",
+    "pages/product/index",
+    "pages/login/index",
+    "pages/privacy/index",
+    "pages/service-agreement/index",
+    "pages/merchant/index",
+    "pages/cart/index",
+    "pages/checkout/index",
+    "pages/orders/index",
+    "pages/product-edit/index",
+    "pages/product-create/index",
+    "pages/settings/index",
+    "pages/support/index"
+  ],
+  "navigateToMiniProgramAppIdList": [
+    "wx18abf078e13f9f0a"
+  ],
+  "window": {
+    "navigationBarTitleText": "RUDA",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#8a8580",
+    "selectedColor": "#1d1b19",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/merchants/index",
+        "text": "商家"
+      },
+      {
+        "pagePath": "pages/modagpt/index",
+        "text": "ModaUI"
+      },
+      {
+        "pagePath": "pages/fashion/index",
+        "text": "时尚"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}
